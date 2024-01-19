@@ -1,21 +1,56 @@
 <!-- Navbar -->
-<div class="row sticky" style="margin:10px;">
-    <div class="col-6" style="margin-top:30px;">
-        <h3 class="font-weight-bolder text-white mb-0">{{ $title }}</h3>
+<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="false">
+    <div class="row sticky" style="margin:10px;">
+        <div class="col-6" style="margin-top:30px;">
+            <h3 class="font-weight-bolder text-white mb-0">{{ $title }}</h3>
+            <!-- <div class="row">
+                <div class="col-1">
+                    <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
+                        <a href="#" class="nav-link p-0">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-8">
+                    <h3 class="font-weight-bolder text-white mb-0">{{ $title }}</h3>
+                </div>
+            </div> -->
+        </div>
+        <div class="col-4">
+            <!-- <form role="form" method="post" action="{{ route('logout') }}" id="logout-form" class="float-end">
+                @csrf
+                <a href="{{ route('logout') }}"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                    class="nav-link text-white font-weight-bold px-0">
+                    <i class="fa fa-user-alt me-sm-1"></i>
+                    <span class="d-sm-inline d-none">Log out</span>
+                </a>
+            </form> -->
+            <ul class="navbar-nav float-end">
+                <li class="nav-item d-flex align-items-center">
+                    <form role="form" method="post" action="{{ route('logout') }}" id="logout-form">
+                        @csrf
+                        <a href="{{ route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                            class="nav-link text-white font-weight-bold px-0">
+                            <i class="fa fa-user me-sm-1"></i>
+                            <span class="d-sm-inline d-none">Log out</span>
+                        </a>
+                    </form>
+                </li>
+                <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                    <a href="javascript:;" class="nav-link text-white p-0" id="iconNavbarSidenav">
+                        <div class="sidenav-toggler-inner">
+                            <i class="sidenav-toggler-line bg-white"></i>
+                            <i class="sidenav-toggler-line bg-white"></i>
+                            <i class="sidenav-toggler-line bg-white"></i>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="col-4">
-        <form role="form" method="post" action="{{ route('logout') }}" id="logout-form" class="float-end">
-            @csrf
-            <a href="{{ route('logout') }}"
-                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                class="nav-link text-white font-weight-bold px-0">
-                <i class="fa fa-user-alt me-sm-1"></i>
-                <span class="d-sm-inline d-none">Log out</span>
-            </a>
-        </form>
-    </div>
-</div>
-{{-- <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl
+</nav>
+<!-- <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl
         {{ str_contains(Request::url(), 'virtual-reality') == true ? ' mt-3 mx-3 bg-primary' : '' }}" id="navbarBlur"
         data-scroll="false">
     <div class="container-fluid py-1 px-3">
@@ -44,13 +79,14 @@
             </ul>
         </div>
     </div>
-</nav> --}}
+</nav> -->
 
 <style>
     div.sticky {
       position: fixed;
       top: 0;
       width: 100%;
+      padding-right: 100px;
       z-index: 100;
     }
 </style>

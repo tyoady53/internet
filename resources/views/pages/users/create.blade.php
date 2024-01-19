@@ -39,7 +39,7 @@
                         <br>
                         @foreach ($roles as $role)
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" value="{{ $role->id }}" name="roles" id="{{ $role->id }}">
+                                <input class="form-check-input" type="radio" value="{{ $role->name }}" name="roles" id="{{ $role->id }}">
                                 <label class="form-check-label" for="{{ $role->id }}">{{ $role->name }}</label>
                             </div>
                         @endforeach

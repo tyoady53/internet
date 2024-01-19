@@ -38,7 +38,31 @@
         </div>
     </div>
 </footer>
+<script>
+    var message = '';
+    document.addEventListener('DOMContentLoaded', function() {
+        var message = '';
 
+        @if(session('success') == 'updated')
+            message = 'Data Updated';
+        @elseif (session('success') == 'created')
+            message = 'Data Created Successfully';
+        @endif
+
+        if (message !== '') {
+            Swal.fire({
+                title: 'Success!',
+                text: message,
+                icon: 'success'
+            });
+
+            // Clear the 'success' session variable
+            @php
+                session()->forget('success');
+            @endphp
+        }
+    });
+</script>
 <style>
 footer {
   position: fixed;

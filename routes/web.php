@@ -25,15 +25,12 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;
-use App\Http\Controllers\ChoiceTestController;
-use App\Http\Controllers\JudgesHasUserController;
-use App\Http\Controllers\QuickResponseController;
+use App\Http\Controllers\CustomerBillingController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\MasterBillingController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\RolePlayController;
+use App\Http\Controllers\SetupProgramController;
 use App\Http\Controllers\UserController;
-use App\Models\JudgesHasUser;
-use App\Models\RolePlay;
-use Illuminate\Support\Benchmark;
 
 Route::get('/', function () {return redirect('/dashboard');})->middleware('auth');
 	Route::get('/register', [RegisterController::class, 'create'])->middleware('guest')->name('register');
@@ -45,7 +42,6 @@ Route::get('/', function () {return redirect('/dashboard');})->middleware('auth'
 	Route::get('/change-password', [ChangePassword::class, 'show'])->middleware('guest')->name('change-password');
 	Route::post('/change-password', [ChangePassword::class, 'update'])->middleware('guest')->name('change.perform');
 	Route::get('/dashboard', [HomeController::class, 'index'])->name('home')->middleware('auth');
-	Route::post('/each_answer', [ChoiceTestController::class, 'each_answer'])->middleware('auth');
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('/virtual-reality', [PageController::class, 'vr'])->name('virtual-reality');
 	Route::get('/rtl', [PageController::class, 'rtl'])->name('rtl');
@@ -57,6 +53,32 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/{page}', [PageController::class, 'index'])->name('page');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
+    Route::prefix('setup')->group(function () {
+        Route::get('/', [SetupProgramController::class, 'index'])->name('setup.index');
+        Route::post('/update', [SetupProgramController::class, 'update'])->name('setup.update');
+    });
+    Route::prefix('customer')->group(function () {
+        Route::get('/index', [CustomerController::class, 'index'])->name('customer.index');
+        Route::get('/edit/{slug}', [CustomerController::class, 'edit'])->name('customer.edit');
+        Route::get('/create', [CustomerController::class, 'create'])->name('customer.create');
+        Route::post('/update/{slug}', [CustomerController::class, 'update'])->name('customer.update');
+        Route::post('/store', [CustomerController::class, 'store'])->name('customer.store');
+    });
+    Route::prefix('billing')->group(function () {
+        Route::get('/index', [CustomerBillingController::class, 'index'])->name('billing.index');
+        Route::get('/edit/{slug}', [CustomerBillingController::class, 'edit'])->name('billing.edit');
+        Route::get('/create/{slug}', [CustomerBillingController::class, 'create'])->name('billing.create');
+        Route::post('/update/{slug}', [CustomerBillingController::class, 'update'])->name('billing.update');
+        Route::post('/store/{slug}', [CustomerBillingController::class, 'store'])->name('billing.store');
+        Route::get('/pay/{slug}', [CustomerBillingController::class, 'show'])->name('billing.pay');
+    });
+    Route::prefix('master-bill')->group(function () {
+        Route::get('/index', [MasterBillingController::class, 'index'])->name('master-bill.index');
+        Route::get('/edit/{slug}', [MasterBillingController::class, 'edit'])->name('master-bill.edit');
+        Route::get('/create', [MasterBillingController::class, 'create'])->name('master-bill.create');
+        Route::post('/update/{slug}', [MasterBillingController::class, 'update'])->name('master-bill.update');
+        Route::post('/store', [MasterBillingController::class, 'store'])->name('master-bill.store');
+    });
     Route::prefix('user')->group(function () {
         Route::get('/index', [UserController::class, 'index'])->name('user.index');
         Route::get('/edit/{slug}', [UserController::class, 'edit'])->name('user.edit');
@@ -71,36 +93,5 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/store', [RoleController::class, 'store'])->name('role.store');
         Route::post('/update/{slug}', [RoleController::class, 'update'])->name('role.update');
         Route::get('/show', [RoleController::class, 'show'])->name('role.show');
-    });
-    Route::prefix('judges')->group(function () {
-        Route::get('/index', [JudgesHasUserController::class, 'index'])->name('judges.index');
-        Route::get('/edit/{slug}', [JudgesHasUserController::class, 'edit'])->name('judges.edit');
-        Route::post('/update/{slug}', [JudgesHasUserController::class, 'update'])->name('judges.update');
-    });
-
-    Route::prefix('test')->group(function () {
-        Route::prefix('mulitple_choice')->group(function () {
-            Route::get('/index', [ChoiceTestController::class, 'index'])->name('test-mulitple_choice');
-            Route::post('/create', [ChoiceTestController::class, 'create'])->name('test-mulitple_choice-create');
-        });
-        Route::prefix('role_play')->group(function () {
-            Route::get('/index', [RolePlayController::class, 'index'])->name('test-role_play');
-            Route::get('/show/{encrypted}', [RolePlayController::class, 'show'])->name('test-role_play.show');
-            Route::post('/create', [RolePlayController::class, 'create'])->name('test-role_play.create');
-        });
-
-        Route::prefix('bench_mark')->group(function () {
-            Route::get('/index', [BenchMarkScoreController::class, 'index'])->name('test-bench_mark');
-            Route::get('/show/{encrypted}', [BenchMarkScoreController::class, 'show'])->name('test-bench_mark.show');
-            Route::post('/create', [BenchMarkScoreController::class, 'create'])->name('test-bench_mark.create');
-        });
-
-        Route::prefix('quick_response')->group(function () {
-            Route::get('/index', [QuickResponseController::class, 'index'])->name('test-quick_response');
-            Route::get('/show/{encrypted}', [QuickResponseController::class, 'show'])->name('test-quick_response.show');
-            Route::post('/create', [QuickResponseController::class, 'create'])->name('test-quick_response.create');
-        });
-        // Route::get('/mulitple_choice', [ChoiceTestController::class, 'index'])->name('test-mulitple_choice');
-        // Route::post('/create', [ChoiceTestController::class, 'create'])->name('test-create');
     });
 });

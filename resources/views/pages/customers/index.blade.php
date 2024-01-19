@@ -1,43 +1,43 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-    @include('layouts.navbars.auth.topnav', ['title' => 'User Management'])
+    @include('layouts.navbars.auth.topnav', ['title' => 'Customers'])
     <div class="card shadow-lg mx-4 mt-8" id="user_info">
         <div class="card-body p-3">
             <div class="row gx-4">
+                {{-- {{ dd(session()->all()); }} --}}
                 <form>
                     <div class="input-group mb-3">
-                        <a href="/user/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a>
+                        <a href="/customer/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a>
                         {{-- <input type="text" class="form-control input-group-text mb-3" placeholder="search by user name . . .">
 
                         <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> SEARCH</button> --}}
                     </div>
                 </form>
+                <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
                             <th scope="col" class="text-center"> Name </th>
-                            <th scope="col" class="text-center"> Gender </th>
-                            <th scope="col" class="text-center"> Role </th>
-                            <th scope="col" style="width:10%" class="text-center"> Actions </th>
+                            <th scope="col" class="text-center"> Address </th>
+                            <th scope="col" class="text-center"> House No </th>
+                            <th scope="col" class="text-center"> Water Meter </th>
+                            <th scope="col" class="text-center"> Status</th>
+                            <th scope="col" style="width:10%" class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($user as $u)
                         <tr>
                             <td>{{ $u->name }}</td>
+                            <td>{{ $u->address }}</td>
+                            <td>{{ $u->house_no }}</td>
+                            <td>{{ $u->water_meter_no }}</td>
                             <td class="text-center">
-                                @if($u->gender == 'm')
-                                    Laki-Laki
+                                @if($u->status == '1')
+                                    Active
                                 @else
-                                    Perempuan
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if(count($u->roles))
-                                    <span class="badge bg-primary shadow border-0 ms-2 mb-2">
-                                        {{ $u->roles[0]->name }}
-                                    </span>
+                                    Not Active
                                 @endif
                             </td>
                             <td class="text-center">
@@ -48,6 +48,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
@@ -156,7 +157,10 @@
     </style>
     <script>
         $(document).ready(function($) {
-            new DataTable('#example');
+            new DataTable('#example', {
+                order: [[4, 'asc'],[2, 'asc']]
+            });
+            // new DataTable('#example');
         })
     </script>
 

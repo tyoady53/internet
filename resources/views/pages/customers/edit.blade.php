@@ -5,7 +5,7 @@
     <div class="card shadow-lg mx-4 mt-8" id="user_info">
         <div class="card-body p-3">
             <div class="row gx-4">
-                <form role="form" method="post" action="{{ route('user.update', $user->encrypted_id) }}">
+                <form role="form" method="post" action="{{ route('customer.update', $user->encrypted_id) }}">
                     @csrf
                     <div class="row">
                         <div class="col-md-12">
@@ -16,48 +16,39 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="fw-bold">Email</label>
-                                <input class="form-control" value="{{ $user->email }}" name="email" type="email" placeholder="email">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="fw-bold">Gender</label>
-                                <select class="form-control" name="gender">
-                                    <option value="" disabled selected>Choose One</option>
-                                    <option value="m">Male</option>
-                                    <option value="f">Female</option>
-                                </select>
+                                <label class="fw-bold">Address</label>
+                                <input class="form-control" value="{{ $user->address }}" name="address" type="text" placeholder="Address">
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="fw-bold">Password</label>
-                                <input class="form-control" value="" :class="{ 'is-invalid': errors.password }" name="password" type="password" placeholder="Password"  @if($user->id != auth()->user()->id) readonly @endif>
+                                <label class="fw-bold">Billing Number</label>
+                                <input class="form-control" value="" name="billing" type="text" placeholder="Billing Number">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="fw-bold">Repeat Password</label>
-                                <input class="form-control" value="" :class="{ 'is-invalid': errors.password_confirmation }" name="repeat" type="password" placeholder="Repeat Password" @if($user->id != auth()->user()->id) readonly @endif>
+                                <label class="fw-bold">Phone</label>
+                                <input class="form-control" value="" name="phone" type="text" placeholder="Phone">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label class="fw-bold">Status</label><br>
+                                <input name="status" class="toggle-class" type="checkbox" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-on="Active" data-off="InActive" {{ $user->status ? 'checked' : '' }}>
+                                {{-- <input class="form-control" value="{{ $user->status }}" name="address" type="checkbox" placeholder="Address"> --}}
                             </div>
                         </div>
                     </div>
                     <hr>
-                    <div class="mb-3">
-                        <label class="fw-bold">Role</label>
-                        <br>
-                        @foreach ($roles as $role)
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" value="{{ $role->name }}" name="roles" id="{{ $role->id }}" @if(count($user->roles)) @if($user->roles[0]->id == $role->id) checked @endif @endif>
-                                <label class="form-check-label" for="{{ $role->id }}">{{ $role->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
                     <div class="row mt-3">
                         <div class="col-12">
                             <button class="btn btn-primary shadow-sm rounded-sm" type="submit">UPDATE</button>

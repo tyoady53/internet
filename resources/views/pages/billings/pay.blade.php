@@ -1,53 +1,57 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-    @include('layouts.navbars.auth.topnav', ['title' => 'User Management'])
+    @include('layouts.navbars.auth.topnav', ['title' => 'Customer Billing'])
     <div class="card shadow-lg mx-4 mt-8" id="user_info">
         <div class="card-body p-3">
             <div class="row gx-4">
                 <form>
                     <div class="input-group mb-3">
-                        <a href="/user/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a>
+                        {{-- <a href="/public/customer/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a> --}}
                         {{-- <input type="text" class="form-control input-group-text mb-3" placeholder="search by user name . . .">
 
                         <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> SEARCH</button> --}}
                     </div>
                 </form>
+                <h5></h5>
+                <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
-                            <th scope="col" class="text-center"> Name </th>
-                            <th scope="col" class="text-center"> Gender </th>
-                            <th scope="col" class="text-center"> Role </th>
-                            <th scope="col" style="width:10%" class="text-center"> Actions </th>
+                            <th scope="col" class="text-center"> Billing Date </th>
+                            <th scope="col" class="text-center"> Terlambat </th>
+                            <th scope="col" class="text-center"> Denda </th>
+                            <th scope="col" class="text-center"> Status </th>
+                            <th scope="col" class="text-center"> Usage </th>
+                            <th scope="col" class="text-center"> Total </th>
+                            <th scope="col" class="text-center"> Action </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($user as $u)
+                        @foreach ($data->billings as $u)
                         <tr>
-                            <td>{{ $u->name }}</td>
+                            <td>{{ $u->billing_date }}</td>
+                            <td>{{ $u->late }} Bulan</td>
+                            <td class="text-end">{{ number_format($u->late*$setup->fine_fee) }}</td>
                             <td class="text-center">
-                                @if($u->gender == 'm')
-                                    Laki-Laki
+                                @if($u->pay_date == null)
+                                    Belum Dibayar
                                 @else
-                                    Perempuan
+                                    Terbayar
                                 @endif
                             </td>
+                            <td class="text-center">{{ $u->usage }} m3</td>
+                            <td class="text-end">{{ number_format($u->price_total) }}</td>
                             <td class="text-center">
-                                @if(count($u->roles))
-                                    <span class="badge bg-primary shadow border-0 ms-2 mb-2">
-                                        {{ $u->roles[0]->name }}
-                                    </span>
+                                @if($u->pay_date == null)
+                                    <a href="{{ './pay/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Print</a>
                                 @endif
-                            </td>
-                            <td class="text-center">
-                                <a href="{{ './edit/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> EDIT</a>
-                                    {{-- <a href="{{ route('user.edit', $u->slug) }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> EDIT</a> --}}
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
@@ -156,7 +160,9 @@
     </style>
     <script>
         $(document).ready(function($) {
-            new DataTable('#example');
+            new DataTable('#example', {
+                order: [0, 'desc']
+            });
         })
     </script>
 

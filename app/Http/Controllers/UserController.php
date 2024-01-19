@@ -39,7 +39,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
         $pwd    = bcrypt('secret');
         $this->validate($request, [
             'email'     =>  'required|unique:users',
@@ -62,8 +61,8 @@ class UserController extends Controller
         if($insert){
             $insert->update(['encrypted_id'  => $encrypted_id]);
         }
-
-        $insert->assignRole($request->roles);
+        $insert->syncRoles($request->roles);
+        // $insert->assignRole($request->roles);
 
         return redirect('user/index');
     }

@@ -53,11 +53,6 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
-    public function rolePlayGroups()
-    {
-        return $this->hasMany(RolePlayGroup::class, 'role_id');
-    }
-
     public function judges() {
         return $this->hasMany(JudgesHasUser::class,'judge_id','id');
     }

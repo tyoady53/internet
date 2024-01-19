@@ -13,8 +13,6 @@ class PermissionTableSeeder extends Seeder
      */
     public function run(): void
     {
-        Permission::create(['name' => 'mutiplechoice.index', 'guard_name' => 'web']);
-        Permission::create(['name' => 'mutiplechoice.quis', 'guard_name' => 'web']);
-        Permission::create(['name' => 'mutiplechoice.results', 'guard_name' => 'web']);
+        Permission::create(['name' => 'dashboard', 'guard_name' => 'web']);
     }
 }

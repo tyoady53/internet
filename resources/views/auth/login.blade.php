@@ -17,7 +17,7 @@
                         <div class="col-xl-6 col-lg-6 col-md-6 d-flex flex-column mx-lg-0 mx-auto">
                             <div class="card card-primary">
                                 <div class="card-header pb-0 text-center">
-                                    <h2>ES-EXCELLENT</h2>
+                                    <h2>TIRTA KOTA ALAM CAGAK LESTARI</h2>
                                     <h4 class="font-weight-bolder">Sign In</h4>
                                     {{-- <p class="mb-0">Enter your email and password to sign in</p> --}}
                                 </div>
