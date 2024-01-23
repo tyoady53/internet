@@ -1,7 +1,7 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-    @include('layouts.navbars.auth.topnav', ['title' => 'Customer Billing'])
+    @include('layouts.navbars.auth.topnav', ['title' => 'Billing'])
     <div class="card shadow-lg mx-4 mt-8" id="user_info">
         <div class="card-body p-3">
             <div class="row gx-4">
@@ -17,14 +17,14 @@
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
-                            <th scope="col" class="text-center"> Name </th>
-                            <th scope="col" class="text-center"> Address </th>
-                            <th scope="col" class="text-center"> House No </th>
+                            <th scope="col" class="text-center"> Nama </th>
+                            <th scope="col" class="text-center"> Alamat </th>
+                            <th scope="col" class="text-center"> No. Rumah </th>
                             <th scope="col" class="text-center"> Water Meter </th>
-                            <th scope="col" class="text-center"> Status</th>
-                            <th scope="col" class="text-center"> Last Billing Date</th>
-                            <th scope="col" class="text-center"> Last Usage</th>
-                            <th scope="col" style="width:10%" class="text-center">Actions</th>
+                            <th scope="col" class="text-center"> Status </th>
+                            <th scope="col" class="text-center"> Tanggal Billing Terakhir </th>
+                            <th scope="col" class="text-center"> Pemakaian Terakhir </th>
+                            <th scope="col" style="width:10%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,9 +36,9 @@
                             <td>{{ $u->water_meter_no }}</td>
                             <td class="text-center">
                                 @if($u->status == '1')
-                                    Active
+                                    Aktif
                                 @else
-                                    Not Active
+                                    Tidak Aktif
                                 @endif
                             </td>
                             <td>
@@ -56,8 +56,8 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <a href="{{ './create/'.$u->encrypted_id }}" class="btn btn-primary btn-sm me-2"><i class="fa fa-plus-circle me-2"></i> Add Billing</a>
-                                <a href="{{ './pay/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Pay</a>
+                                <a href="{{ './create/'.$u->encrypted_id }}" class="btn btn-primary btn-sm me-2"><i class="fa fa-plus-circle me-2"></i> Buat Billing</a>
+                                <a href="{{ './pay/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Pembayaran</a>
                             </td>
                         </tr>
                         @endforeach

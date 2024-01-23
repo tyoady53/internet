@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\CustomerBilling;
 use App\Models\CustomerConsumption;
 use App\Models\MasterBilling;
+use App\Models\PrintCount;
 use App\Models\SetupProgram;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -41,9 +42,11 @@ class CustomerBillingController extends Controller
         $year_arr = array();
         $billings = array();
         $now = Carbon::now();
-        $from = '2022-01-01';
+        $from = '2023-11-01';
+        $from_mo = Carbon::parse($from);
         $to = $now->toDateString();
         $period = CarbonPeriod::create($from, '1 year', $to);
+        $month_diff = $from_mo->diffInMonths($to);
 
         foreach ($period as $dt) {
             array_push($year_arr,$dt);
@@ -52,21 +55,20 @@ class CustomerBillingController extends Controller
         $months = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
         for ($i = 0; $i < count($year_arr); $i++){
             $year_now = $year_arr[$i];
-            foreach ($months as $idx => $month) {
-                if($idx < 9){
-                    $now_idx = '0'.$idx + 1;
+            // foreach ($months as $idx => $month) {
+            for ($j = 0; $j <12;$j++) {
+                if($j < 9){
+                    $now_idx = '0'.$j + 1;
                 } else {
-                    $now_idx = $idx + 1;
+                    $now_idx = $j + 1;
                 }
-                $month_arr->push((object)['key' => substr($year_now,0,4).'-'.$now_idx, 'value' => substr($year_now,0,4).'-'.$month]);
+                $month_arr->push((object)['key' => substr($year_now,0,4).'-'.$now_idx, 'value' => substr($year_now,0,4).'-'.$months[$j]]);
             }
         }
-
         $billings_collection = MasterBilling::get();
         foreach ($billings_collection as $bill) {
             array_push($billings,$bill);
         }
-        // dd($billings);
 
         return view('pages.billings.create',[
             'month_arr'     => $month_arr,
@@ -81,19 +83,49 @@ class CustomerBillingController extends Controller
      */
     public function store(Request $request,$unique_id)
     {
-        $inputString = $request->usage;
+        // $inputString = $request->usage;
         $a = 0; $total = 0;
         $customer = Customer::where('encrypted_id',$unique_id)->first();
         $billing_date = new Carbon($request->periode.'-20');
         $billing_tempo = $billing_date->addMonth()->format('Y-m-d');
         $billings_collection = MasterBilling::get();
+        $data = CustomerBilling::where('customer_id',$customer->id)->orderBy('billing_date','DESC')->first();
+        $inputString = $request->usage -($data ? $data->water_meter_count : 0);
+        $print_count = PrintCount::where('billing_date',$request->periode)->first();
+        $billing_no = '';
+        if(!$print_count){
+            PrintCount::create([
+                'billing_date'  => $request->periode,
+                'print_count'  => 1,
+            ]);
+            $billing_no = str_replace("-","/",$request->periode).'/'.$customer->customer_number.'/0001';
+        } else {
+            $count = $print_count->print_count + 1;
+            $print_count->update([
+                'print_count'   => $count
+            ]);
+            if($count < 10){
+                $number = '000'.$count;
+            }
+            else if($count < 100){
+                $number = '00'.$count;
+            }
+            else if($count < 1000){
+                $number = '0'.$count;
+            } else {
+                $number = $count;
+            }
+            $billing_no = str_replace("-","/",$request->periode).'/'.$customer->customer_number.'/'.$number;
+        }
         $insert = CustomerBilling::create([
             'customer_id'   => $customer->id,
             'billing_date'  => $request->periode,
             'tempo'         => $billing_tempo,
             'usage'         => $request->usage,
             'administration_fees'   => 2500,
-            'price_total'   => 0
+            'price_total'   => 0,
+            'water_meter_count' => $request->last_usage,
+            'billing_number'    => $billing_no,
         ]);
         foreach ($billings_collection as $bill) {
             if($inputString > $bill->minimal - 1){
@@ -208,5 +240,73 @@ class CustomerBillingController extends Controller
     public function destroy(CustomerBilling $customerBilling)
     {
         //
+    }
+
+    public function print($unique_id,$date)
+    {
+        $setup = SetupProgram::where('id',1)->first();
+        $now = Carbon::now();
+        $get = Customer::where('encrypted_id',$unique_id)->with(['billings.consumption',
+        'billings'=> function ($query) use ($now,$date) {
+            $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->where('billing_date',$date);
+        }])
+        ->first();
+        CustomerBilling::where('id',$get->billings[0]->id)->update([
+            // 'late'  => $get->billings[0]->late,
+            'fines' => $get->billings[0]->late * $setup->fine_fee
+        ]);
+        $data = $get = Customer::where('encrypted_id',$unique_id)->with(['billings.consumption',
+        'billings'=> function ($query) use ($now,$date) {
+            $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->where('billing_date',$date);
+        }])
+        ->first();
+        $billing_periode = $data->billings[0]->billing_date;
+        $billing_month = explode("-",$billing_periode)[1];
+        $billing_date = '';
+        switch ($billing_month) {
+            case "01":
+                $billing_date = "Januari ".explode("-",$billing_periode)[0];
+                break;
+            case "02":
+                $billing_date = "Februari ".explode("-",$billing_periode)[0];
+                break;
+            case "03":
+                $billing_date = "Maret ".explode("-",$billing_periode)[0];
+                break;
+            case "04":
+                $billing_date = "April ".explode("-",$billing_periode)[0];
+                break;
+            case "05":
+                $billing_date = "Mei ".explode("-",$billing_periode)[0];
+                break;
+            case "06":
+                $billing_date = "Juni ".explode("-",$billing_periode)[0];
+                break;
+            case "07":
+                $billing_date = "Juli ".explode("-",$billing_periode)[0];
+                break;
+            case "08":
+                $billing_date = "Agustus ".explode("-",$billing_periode)[0];
+                break;
+            case "09":
+                $billing_date = "September ".explode("-",$billing_periode)[0];
+                break;
+            case "10":
+                $billing_date = "Oktober ".explode("-",$billing_periode)[0];
+                break;
+            case "11":
+                $billing_date = "November ".explode("-",$billing_periode)[0];
+                break;
+            case "11":
+                $billing_date = "Desember ".explode("-",$billing_periode)[0];
+                break;
+            default:
+                $billing_date = "-";
+          }
+        // dd($data->billings[0]->billing_date,$billing_date);
+        return view('layouts.print',[
+            'data'          => $data,
+            'billing_date'  => $billing_date
+        ]);
     }
 }

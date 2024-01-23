@@ -10,7 +10,7 @@ c@extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="fw-bold">Name</label>
+                                <label class="fw-bold">Nama</label>
                                 <input class="form-control" value="" name="name" type="text" placeholder="Name">
                             </div>
                         </div>
@@ -18,7 +18,7 @@ c@extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="fw-bold">Address</label>
+                                <label class="fw-bold">Alamat</label>
                                 <input class="form-control" value="" name="address" type="text" placeholder="Address">
                             </div>
                         </div>
@@ -26,7 +26,7 @@ c@extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="fw-bold">Billing Number</label>
+                                <label class="fw-bold">Nomer Billing</label>
                                 <input class="form-control" value="" name="billing" type="text" placeholder="Billing Number">
                             </div>
                         </div>
@@ -34,7 +34,7 @@ c@extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="fw-bold">Phone</label>
+                                <label class="fw-bold">Telepon</label>
                                 <input class="form-control" value="" name="phone" type="text" placeholder="Phone">
                             </div>
                         </div>

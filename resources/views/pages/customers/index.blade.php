@@ -18,12 +18,12 @@
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
-                            <th scope="col" class="text-center"> Name </th>
-                            <th scope="col" class="text-center"> Address </th>
-                            <th scope="col" class="text-center"> House No </th>
+                            <th scope="col" class="text-center"> Nama </th>
+                            <th scope="col" class="text-center"> Alamat </th>
+                            <th scope="col" class="text-center"> no. Rumah </th>
                             <th scope="col" class="text-center"> Water Meter </th>
                             <th scope="col" class="text-center"> Status</th>
-                            <th scope="col" style="width:10%" class="text-center">Actions</th>
+                            <th scope="col" style="width:10%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>

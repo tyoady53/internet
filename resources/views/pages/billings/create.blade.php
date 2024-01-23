@@ -1,7 +1,7 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-    @include('layouts.navbars.auth.topnav', ['title' => 'Edit Management'])
+    @include('layouts.navbars.auth.topnav', ['title' => 'Buat Billing'])
     <div class="card shadow-lg mx-4 mt-8" id="user_info">
         <div class="card-body p-3">
             <div class="row gx-4">
@@ -10,7 +10,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="fw-bold">Name</label>
+                                <label class="fw-bold">Nama</label>
                                 <input class="form-control" value="{{ $customer[0]->name }}" name="name" type="text" placeholder="Name" readonly>
                             </div>
                         </div>
@@ -18,7 +18,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="fw-bold">Address</label>
+                                <label class="fw-bold">Alamat</label>
                                 <input class="form-control" value="{{ $customer[0]->address }}" name="address" type="number" placeholder="Address" readonly>
                             </div>
                         </div>
@@ -36,9 +36,16 @@
                                         </select>
                                     </div>
                                 </div>
+                                {{-- {{ $customer }} --}}
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label class="fw-bold">Usage</label>
+                                        <label class="fw-bold">Pemakaian Terakhir</label>
+                                        <input class="form-control" value="{{ $customer[0]->billings[0]->usage ?? 0 }}" name="last_usage" id="lat_usage" type="number" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Hasil baca Water Meter</label>
                                         <input class="form-control" value="" name="usage" id="usage" type="number" placeholder="Usage">
                                     </div>
                                 </div>
@@ -57,8 +64,8 @@
 
                     <div class="row mt-3">
                         <div class="col-12">
-                            <button class="btn btn-success shadow-sm rounded-sm" type="submit">SAVE</button>
-                            <button class="btn btn-warning shadow-sm rouned-sm ms-3" type="reset">RESET</button>
+                            <button class="btn btn-success shadow-sm rounded-sm" type="submit">Simpan</button>
+                            <button class="btn btn-warning shadow-sm rouned-sm ms-3" type="reset">Reset</button>
                         </div>
                     </div>
                 </form>
@@ -81,7 +88,10 @@
                 var a = '';
                 var b = '';
                 var total = 0;
-                var inputString = $("#usage").val();
+                var usage = $("#usage").val();
+                var last_usage = $("#lat_usage").val();
+                var inputString = usage - last_usage;
+
                 const formatter = new Intl.NumberFormat('en');
                 // var total = document.getElementById('usage');
                 for(var i = 0;i < billing_arr.length; i++){
@@ -117,7 +127,7 @@
                     b = '';
                 }
                 document.getElementById('billings').innerHTML = b;
-                console.log(a);
+                // console.log(a);
             });
 
         });
