@@ -108,13 +108,13 @@
                         PEMAKAIAN BULAN INI
                     </td>
                     <td>
-                        : {{ $data->billings[0]->usage }}
+                        : {{ $data->billings[0]->usage }} m<sup>3</sup>
                     </td>
                     <td rowspan="2" style="width: 20%">
                         PEMAKAIAN YANG DI TAGIHKAN
                     </td>
                     <td rowspan="2">
-                        : {{ $data->billings[0]->usage - $data->billings[0]->water_meter_count }}
+                        : {{ $data->billings[0]->usage - $data->billings[0]->water_meter_count }} m<sup>3</sup>
                     </td>
                 </tr>
                 <tr>
@@ -122,7 +122,7 @@
                         PEMAKAIAN BULAN LALU
                     </td>
                     <td colspan="3">
-                        : {{ $data->billings[0]->water_meter_count }}
+                        : {{ $data->billings[0]->water_meter_count }} m<sup>3</sup>
                     </td>
                 </tr>
                 <tr>

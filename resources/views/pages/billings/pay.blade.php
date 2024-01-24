@@ -43,13 +43,13 @@
                                     Terbayar
                                 @endif
                             </td>
-                            <td class="text-center">{{ $u->water_meter_count }} m3</td>
-                            <td class="text-center">{{ $u->usage }} m3</td>
-                            <td class="text-center">{{ $u->usage - $u->water_meter_count }} m3</td>
+                            <td class="text-center">{{ $u->water_meter_count }} m<sup>3</sup> </td>
+                            <td class="text-center">{{ $u->usage }} m<sup>3</sup> </td>
+                            <td class="text-center">{{ $u->usage - $u->water_meter_count }} m<sup>3</sup> </td>
                             <td class="text-end">{{ number_format(($u->price_total) + ($u->late*$setup->fine_fee)) }}</td>
                             <td class="text-center">
                                 @if($u->pay_date == null)
-                                    <a href="{{ 'print/'.$data->encrypted_id.'/'.$u->billing_date }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Cetak</a>
+                                    <a href="{{ 'print/'.$data->encrypted_id.'/'.$u->billing_date }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Cetak</a>
                                 @endif
                             </td>
                         </tr>
@@ -168,7 +168,9 @@
             new DataTable('#example', {
                 order: [0, 'desc']
             });
-        })
+        });
+
+        // window.open(url, target, windowFeatures);
     </script>
 
 @endsection

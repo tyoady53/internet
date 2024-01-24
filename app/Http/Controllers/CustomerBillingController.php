@@ -297,7 +297,7 @@ class CustomerBillingController extends Controller
             case "11":
                 $billing_date = "November ".explode("-",$billing_periode)[0];
                 break;
-            case "11":
+            case "12":
                 $billing_date = "Desember ".explode("-",$billing_periode)[0];
                 break;
             default:

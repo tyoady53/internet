@@ -14,7 +14,7 @@ class SetupProgramController extends Controller
     public function index()
     {
         $user = SetupProgram::where('id',1)->first();
-        // dd($user);
+        dd($user);
 
         return view('pages.setup',[
             'user'      => $user,
