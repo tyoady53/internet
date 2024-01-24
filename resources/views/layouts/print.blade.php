@@ -114,7 +114,7 @@
                         PEMAKAIAN YANG DI TAGIHKAN
                     </td>
                     <td rowspan="2">
-                        : {{ $data->billings[0]->usage - $data->billings[0]->water_meter_count }} m<sup>3</sup>
+                        : {{ $data->billings[0]->usage - (int)$data->billings[0]->water_meter_count }} m<sup>3</sup>
                     </td>
                 </tr>
                 <tr>
