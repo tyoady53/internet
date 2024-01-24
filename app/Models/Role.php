@@ -9,8 +9,8 @@ use Spatie\Permission\Models\Role as SpatieRole;
 class Role extends SpatieRole
 {
     // use HasFactory;
-    public function rolePlayGroup()
-    {
-        return $this->belongsTo(RolePlayGroup::class, 'role_id');
-    }
+    // public function rolePlayGroup()
+    // {
+    //     return $this->belongsTo(RolePlayGroup::class, 'role_id');
+    // }
 }

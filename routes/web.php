@@ -57,6 +57,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', [SetupProgramController::class, 'index'])->name('setup.index');
         Route::post('/update', [SetupProgramController::class, 'update'])->name('setup.update');
     });
+
+    Route::prefix('report')->group(function () {
+        Route::get('/index', [HomeController::class, 'report'])->name('report.index');
+        Route::get('/print', [HomeController::class, 'report_print'])->name('report.print');
+    });
     Route::prefix('customer')->group(function () {
         Route::get('/index', [CustomerController::class, 'index'])->name('customer.index');
         Route::get('/edit/{slug}', [CustomerController::class, 'edit'])->name('customer.edit');

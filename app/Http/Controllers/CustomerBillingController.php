@@ -52,19 +52,40 @@ class CustomerBillingController extends Controller
             array_push($year_arr,$dt);
         }
         $month_arr = new Collection();
+        $monthDiff = ($now->format('Y') - $from_mo->format('Y')) * 12 + ($now->format('m') - $from_mo->format('m')) + 1;
         $months = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-        for ($i = 0; $i < count($year_arr); $i++){
-            $year_now = $year_arr[$i];
-            // foreach ($months as $idx => $month) {
-            for ($j = 0; $j <12;$j++) {
-                if($j < 9){
-                    $now_idx = '0'.$j + 1;
+        for ($i = 0; $i < $monthDiff; $i++){
+            $month  = $from_mo->format('m')+$i;
+            $year   = $from_mo->format('Y');
+            $monthsBetween = $month % 12;
+            if($month > 12){
+                $yearsBetween = floor($month / 12);
+                if($monthsBetween > 0){
+                    $month_current = $monthsBetween;
+                    $year_current = $year+$yearsBetween;
                 } else {
-                    $now_idx = $j + 1;
+                    $month_current = 12;
+                    $year_current = $year+$yearsBetween-1;
                 }
-                $month_arr->push((object)['key' => substr($year_now,0,4).'-'.$now_idx, 'value' => substr($year_now,0,4).'-'.$months[$j]]);
+            } else {
+                $month_current = $month;
+                $year_current = $year;
             }
+            $month_arr->push((object)['key' => $year_current.'-'.$month_current, 'value' => $year_current.'-'.$months[$month_current-1]]);
         }
+
+        // for ($i = 0; $i < count($year_arr); $i++){
+        //     $year_now = $year_arr[$i];
+        //     // foreach ($months as $idx => $month) {
+        //     for ($j = 0; $j <12;$j++) {
+        //         if($j < 9){
+        //             $now_idx = '0'.$j + 1;
+        //         } else {
+        //             $now_idx = $j + 1;
+        //         }
+        //         $month_arr->push((object)['key' => substr($year_now,0,4).'-'.$now_idx, 'value' => substr($year_now,0,4).'-'.$months[$j]]);
+        //     }
+        // }
         $billings_collection = MasterBilling::get();
         foreach ($billings_collection as $bill) {
             array_push($billings,$bill);
