@@ -45,7 +45,7 @@
                             </td>
                             <td class="text-center">{{ $u->water_meter_count }} m<sup>3</sup> </td>
                             <td class="text-center">{{ $u->usage }} m<sup>3</sup> </td>
-                            <td class="text-center">{{ $u->usage - $u->water_meter_count }} m<sup>3</sup> </td>
+                            <td class="text-center">{{ $u->usage - (int)$u->water_meter_count }} m<sup>3</sup> </td>
                             <td class="text-end">{{ number_format(($u->price_total) + ($u->late*$setup->fine_fee)) }}</td>
                             <td class="text-center">
                                 @if($u->pay_date == null)

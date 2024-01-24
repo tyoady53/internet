@@ -50,7 +50,7 @@
                             </td>
                             <td>
                                 @if(count($u->billings))
-                                    {{ $u->billings[0]->usage }} m3
+                                    {{ $u->billings[0]->usage }} m<sup>3</sup>
                                 @else
                                     -
                                 @endif
