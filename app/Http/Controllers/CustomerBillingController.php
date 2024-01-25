@@ -330,4 +330,80 @@ class CustomerBillingController extends Controller
             'billing_date'  => $billing_date
         ]);
     }
+
+    public function payment($unique_id,$date)
+    {
+        $setup = SetupProgram::where('id',1)->first();
+        $now = Carbon::now();
+        $get = Customer::where('encrypted_id',$unique_id)->with(['billings.consumption',
+        'billings'=> function ($query) use ($now,$date) {
+            $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->where('billing_date',$date);
+        }])
+        ->first();
+        CustomerBilling::where('id',$get->billings[0]->id)->update([
+            'fines' => $get->billings[0]->late * $setup->fine_fee,
+            'pay_date' => $now
+        ]);
+
+        $data = $get = Customer::where('encrypted_id',$unique_id)->with(['billings.consumption',
+        'billings'=> function ($query) use ($now,$date) {
+            $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->where('billing_date',$date);
+        }])
+        ->first();
+        $billing_periode = $data->billings[0]->billing_date;
+        $billing_month = explode("-",$billing_periode)[1];
+        $billing_date = '';
+        switch ($billing_month) {
+            case "01":
+                $billing_date = "Januari ".explode("-",$billing_periode)[0];
+                break;
+            case "02":
+                $billing_date = "Februari ".explode("-",$billing_periode)[0];
+                break;
+            case "03":
+                $billing_date = "Maret ".explode("-",$billing_periode)[0];
+                break;
+            case "04":
+                $billing_date = "April ".explode("-",$billing_periode)[0];
+                break;
+            case "05":
+                $billing_date = "Mei ".explode("-",$billing_periode)[0];
+                break;
+            case "06":
+                $billing_date = "Juni ".explode("-",$billing_periode)[0];
+                break;
+            case "07":
+                $billing_date = "Juli ".explode("-",$billing_periode)[0];
+                break;
+            case "08":
+                $billing_date = "Agustus ".explode("-",$billing_periode)[0];
+                break;
+            case "09":
+                $billing_date = "September ".explode("-",$billing_periode)[0];
+                break;
+            case "10":
+                $billing_date = "Oktober ".explode("-",$billing_periode)[0];
+                break;
+            case "11":
+                $billing_date = "November ".explode("-",$billing_periode)[0];
+                break;
+            case "12":
+                $billing_date = "Desember ".explode("-",$billing_periode)[0];
+                break;
+            default:
+                $billing_date = "-";
+          }
+
+        // return view('layouts.print',[
+        //     'data'          => $data,
+        //     'billing_date'  => $billing_date
+        // ]);
+        // return view('pages.billings.pay',[
+        //     'data'      => $data,
+        //     'setup'     => SetupProgram::where('id',1)->first(),
+        //     'date'      => $now,
+        // ]);
+        return redirect('billing/pay/'.$unique_id)->with('success','created');
+        // return redirect('billing.pay')
+    }
 }

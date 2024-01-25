@@ -77,6 +77,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/store/{slug}', [CustomerBillingController::class, 'store'])->name('billing.store');
         Route::get('/pay/{slug}', [CustomerBillingController::class, 'show'])->name('billing.pay');
         Route::get('/pay/print/{slug}/{date}', [CustomerBillingController::class, 'print'])->name('billing.print');
+        Route::get('/pay/payment/{slug}/{date}', [CustomerBillingController::class, 'payment'])->name('billing.payment');
     });
     Route::prefix('master-bill')->group(function () {
         Route::get('/index', [MasterBillingController::class, 'index'])->name('master-bill.index');
