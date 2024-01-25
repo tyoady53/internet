@@ -27,7 +27,7 @@
                                         @method('post')
                                         {{-- <div class="flex flex-col mb-3"> --}}
                                         <div class="form-floating mt-3 mb-3">
-                                            <input type="text" name="email" id="email" class="form-control" value="{{ old('email') ?? 'admin@argon.com' }}">
+                                            <input type="text" name="email" id="email" class="form-control" value="{{ old('email') ?? 'kasir@test.com' }}">
                                             <label for="email">User Name</label>
                                             @error('email') <p class="text-danger text-xs pt-1"> {{$message}} </p>@enderror
                                         </div>
