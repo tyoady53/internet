@@ -61,23 +61,14 @@ class CustomerBillingController extends Controller
             if($month > 12){
                 $yearsBetween = floor($month / 12);
                 if($monthsBetween > 0){
-                    if($monthsBetween < 10){
-                        $month_current = '0'.$monthsBetween;
-                    } else {
-                        $month_current = $monthsBetween;
-                    }
-                    // $month_current = $monthsBetween;
+                    $month_current = $monthsBetween;
                     $year_current = $year+$yearsBetween;
                 } else {
                     $month_current = 12;
                     $year_current = $year+$yearsBetween-1;
                 }
             } else {
-                if($month < 10){
-                    $month_current = '0'.$month;
-                } else {
-                    $month_current = $month;
-                }
+                $month_current = $month;
                 $year_current = $year;
             }
             $month_arr->push((object)['key' => $year_current.'-'.$month_current, 'value' => $year_current.'-'.$months[$month_current-1]]);
@@ -120,9 +111,8 @@ class CustomerBillingController extends Controller
         $billing_tempo = $billing_date->addMonth()->format('Y-m-d');
         $billings_collection = MasterBilling::get();
         $data = CustomerBilling::where('customer_id',$customer->id)->orderBy('billing_date','DESC')->first();
-        $inputString = $request->usage - ($data ? $data->usage : 0);
+        $inputString = $request->usage -($data ? $data->water_meter_count : 0);
         $print_count = PrintCount::where('billing_date',$request->periode)->first();
-        // dd($inputString,$data,$request->periode);
         $billing_no = '';
         if(!$print_count){
             PrintCount::create([
@@ -413,11 +403,7 @@ class CustomerBillingController extends Controller
         //     'setup'     => SetupProgram::where('id',1)->first(),
         //     'date'      => $now,
         // ]);
-        return view('layouts.kwitansi',[
-            'data'          => $data,
-            'billing_date'  => $billing_date
-        ])->with('success','created');
-        // return redirect('billing/pay/'.$unique_id)->with('success','created');
+        return redirect('billing/pay/'.$unique_id)->with('success','created');
         // return redirect('billing.pay')
     }
 }

@@ -54,7 +54,7 @@
         <style>
             @media print {
                 @page {
-                    size: A5 landscape;
+                    size: A5;
                     margin: 0;
                 }
 
@@ -102,7 +102,7 @@
                         : {{ $data->house_no }}
                     </td>
                 </tr>
-                <tr><td colspan="4"><div class="text-center">STAND METER (M3)</div></td></tr>
+                <tr><td colspan="4"><div class="text-center">STAND METER (M<sup>3</sup>)</div></td></tr>
                 <tr>
                     <td>
                         PEMAKAIAN BULAN INI
