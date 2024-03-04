@@ -1,7 +1,7 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-    @include('layouts.navbars.auth.topnav', ['title' => 'Billing '.$data->name])
+    @include('layouts.navbars.auth.topnav', ['title' => 'Pembayaran '])
     <div class="card shadow-lg mx-4 mt-8" id="user_info">
         <div class="card-body p-3">
             <div class="row gx-4">
@@ -18,6 +18,7 @@
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
+                            <th scope="col" class="text-center"> Nama </th>
                             <th scope="col" class="text-center"> Tanggal Billing </th>
                             <th scope="col" class="text-center"> Terlambat </th>
                             <th scope="col" class="text-center"> Denda </th>
@@ -30,12 +31,25 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data->billings as $u)
+                        @foreach ($data as $u)
                         {{-- {{ $u }} --}}
                         <tr>
-                            <td>{{ $u->billing_date }}</td>
-                            <td>{{ $u->late }} Bulan</td>
-                            <td class="text-end">{{ number_format($u->late*$setup->fine_fee) }}</td>
+                            <td>{{ $u->name }}</td>
+                            <td>
+                                @foreach ($u->billings as $billing)
+                                    {{ $billing->billing_date }}<br>
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach ($u->billings as $billing)
+                                    {{ $billing->late }} Bulan<br>
+                                @endforeach
+                            </td>
+                            <td class="text-end">
+                                @foreach ($u->billings as $billing)
+                                    {{ number_format($billing->late*$setup->fine_fee) }}<br>
+                                @endforeach
+                            </td>
                             <td class="text-center">
                                 @if($u->pay_date == null)
                                     Belum Dibayar
@@ -43,15 +57,32 @@
                                     Terbayar
                                 @endif
                             </td>
-                            <td class="text-center">{{ $u->water_meter_count }} m<sup>3</sup> </td>
-                            <td class="text-center">{{ $u->usage }} m<sup>3</sup> </td>
-                            <td class="text-center">{{ $u->usage - (int)$u->water_meter_count }} m<sup>3</sup> </td>
-                            <td class="text-end">{{ number_format(($u->price_total) + ($u->late*$setup->fine_fee)) }}</td>
+                            <td class="text-center">
+                                @foreach ($u->billings as $billing)
+                                    {{ $billing->water_meter_count }} m<sup>3</sup> <br>
+                                @endforeach
+
+                            </td>
+                            <td class="text-center">
+                                @foreach ($u->billings as $billing)
+                                    {{ $billing->usage }} m<sup>3</sup><br>
+                                @endforeach
+                            </td>
+                            <td class="text-center">
+                                @foreach ($u->billings as $billing)
+                                    {{ $billing->usage - (int)$billing->water_meter_count }} m<sup>3</sup> <br>
+                                @endforeach
+                            </td>
+                            <td class="text-end">
+                                @foreach ($u->billings as $billing)
+                                    {{ number_format(($billing->price_total) + ($billing->late*$setup->fine_fee)) }}<br>
+                                @endforeach
+                            </td>
                             <td class="text-center">
                                 @if($u->pay_date == null)
-                                    <a href="{{ 'print/'.$data->encrypted_id.'/'.$u->billing_date }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-primary btn-sm me-2"><i class="fa fa-print me-1"></i> Cetak</a>
+                                    {{-- <a href="{{ 'print/'.$data->encrypted_id.'/'.$u->billing_date }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-primary btn-sm me-2"><i class="fa fa-print me-1"></i> Cetak</a> --}}
                                     {{-- <a onclick="open_in_new_tab_and_reload('./payment/'.$data->encrypted_id.'/'.$u->billing_date)" href="#" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a> --}}
-                                    {{-- <a href="{{ 'payment/'.$data->encrypted_id.'/'.$u->billing_date }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a> --}}
+                                    <a href="{{ 'payment/'.$u->encrypted_id }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a>
                                 @else
                                     <span class="badge bg-success shadow border-0 ms-2 mb-2">
                                         Lunas

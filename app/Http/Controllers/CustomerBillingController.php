@@ -347,9 +347,10 @@ class CustomerBillingController extends Controller
         $now = Carbon::now();
         $get = Customer::where('encrypted_id',$unique_id)->with(['billings.consumption',
         'billings'=> function ($query) use ($now,$date) {
-            $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->where('billing_date',$date);
+            $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->whereNull('pay_date');
         }])
-        ->first();
+        ->get();
+        dd($get);
         CustomerBilling::where('id',$get->billings[0]->id)->update([
             'fines' => $get->billings[0]->late * $setup->fine_fee,
             'pay_date' => $now
@@ -414,6 +415,7 @@ class CustomerBillingController extends Controller
         //     'date'      => $now,
         // ]);
         return view('layouts.kwitansi',[
+            'setup'         => $setup,
             'data'          => $data,
             'billing_date'  => $billing_date
         ])->with('success','created');

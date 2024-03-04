@@ -66,18 +66,13 @@
     </head>
     <body>
         <div class=row>
-            <div class="col-4">
+            <div class="col-12">
                 <div>
-                    <h6>PERUSAHAAN AIR MINUM<br>TIRTA KOTA ALAM CAGAK LESTARI</h6>
+                    <h6>PERUSAHAAN AIR MINUM<br>TIRTA KOTA ALAM CAGAK LESTARI</h6>Jl. Raya Ciseuti Ds.Jalancagak Kec.Jalancagak
                 </div>
             </div>
-            <div class="col-4">
-                <div class="text-center pt-1">
-                    <h6>KWITANSI</h6>
-                </div>
-            </div>
-            <div class="col-4"></div>
         </div>
+        {{-- {{ $setup }} --}}
         <div class="mx-3">
             <table style="width: 100%">
                 <tr>
