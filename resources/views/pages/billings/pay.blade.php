@@ -50,8 +50,6 @@
                             <td class="text-center">
                                 @if($u->pay_date == null)
                                     <a href="{{ 'print/'.$data->encrypted_id.'/'.$u->billing_date }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-primary btn-sm me-2"><i class="fa fa-print me-1"></i> Cetak</a>
-                                    {{-- <a onclick="open_in_new_tab_and_reload('./payment/'.$data->encrypted_id.'/'.$u->billing_date)" href="#" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a> --}}
-                                    {{-- <a href="{{ 'payment/'.$data->encrypted_id.'/'.$u->billing_date }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a> --}}
                                 @else
                                     <span class="badge bg-success shadow border-0 ms-2 mb-2">
                                         Lunas

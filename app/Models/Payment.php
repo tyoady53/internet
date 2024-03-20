@@ -16,4 +16,8 @@ class Payment extends Model
     {
         return $this->hasMany(PaymentDetail::class, 'payment_id');
     }
+
+    public function customer(){
+        return $this->belongsTo(Customer::class,'customer_id');
+    }
 }

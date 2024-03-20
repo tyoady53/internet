@@ -80,9 +80,8 @@
                             </td>
                             <td class="text-center">
                                 @if($u->pay_date == null)
-                                    {{-- <a href="{{ 'print/'.$data->encrypted_id.'/'.$u->billing_date }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-primary btn-sm me-2"><i class="fa fa-print me-1"></i> Cetak</a> --}}
-                                    {{-- <a onclick="open_in_new_tab_and_reload('./payment/'.$data->encrypted_id.'/'.$u->billing_date)" href="#" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a> --}}
-                                    <a href="{{ 'payment/'.$u->encrypted_id }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a>
+                                    <a href="{{ 'payment/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a>
+                                    <!--  onclick="window.open(this.href, 'new', 'popup'); return false;"  -->
                                 @else
                                     <span class="badge bg-success shadow border-0 ms-2 mb-2">
                                         Lunas
@@ -93,6 +92,75 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
+                <hr>
+                {{-- {{ $paid }} --}}
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="example">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-center"> Nama </th>
+                                <th scope="col" class="text-center"> Tanggal Billing </th>
+                                <th scope="col" class="text-center"> Terlambat </th>
+                                <th scope="col" class="text-center"> Denda </th>
+                                <th scope="col" class="text-center"> Tanggal Bayar </th>
+                                <th scope="col" class="text-center"> Pemakaian Sebelumnya </th>
+                                <th scope="col" class="text-center"> Hasil Water Meter </th>
+                                <th scope="col" class="text-center"> Pemakaian </th>
+                                <th scope="col" class="text-center"> Total </th>
+                                <th scope="col" class="text-center"> Aksi </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($paid as $u)
+                            <tr>
+                                <td>{{ $u->customer->name }}</td>
+                                <td>
+                                    @foreach ($u->detail as $billing)
+                                        {{ $billing->billing->billing_date }}<br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach ($u->detail as $billing)
+                                        {{ $billing->late }} Bulan<br>
+                                    @endforeach
+                                </td>
+                                <td class="text-end">
+                                    @foreach ($u->detail as $billing)
+                                        {{ number_format($billing->billing->fines) }}<br>
+                                    @endforeach
+                                </td>
+                                <td class="text-center">
+                                    {{ $u->payment }}
+                                </td>
+                                <td class="text-center">
+                                    @foreach ($u->detail as $billing)
+                                        {{ $billing->billing->water_meter_count }} m<sup>3</sup> <br>
+                                    @endforeach
+
+                                </td>
+                                <td class="text-center">
+                                    @foreach ($u->detail as $billing)
+                                        {{ $billing->billing->usage }} m<sup>3</sup><br>
+                                    @endforeach
+                                </td>
+                                <td class="text-center">
+                                    @foreach ($u->detail as $billing)
+                                        {{ $billing->billing->usage - (int)$billing->billing->water_meter_count }} m<sup>3</sup> <br>
+                                    @endforeach
+                                </td>
+                                <td class="text-end">
+                                    @foreach ($u->detail as $billing)
+                                        {{ number_format(($billing->billing->price_total) + ($billing->billing->late*$setup->fine_fee)) }}<br>
+                                    @endforeach
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ 'print/'.$u->encrypted_id }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-success btn-sm me-2"><i class="fa fa-print me-1"></i> Cetak</a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -10,4 +10,9 @@ class PaymentDetail extends Model
     use HasFactory;
     protected $guarded = [
     ];
+
+    public function billing()
+    {
+        return $this->belongsTo(CustomerBilling::class, 'billing_id');
+    }
 }

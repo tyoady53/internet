@@ -65,145 +65,158 @@
         </style>
     </head>
     <body>
-        <div class=row>
+        <div class="row ms-2 me-2">
             <div class="col-12">
-                <div>
-                    <h6>PERUSAHAAN AIR MINUM<br>TIRTA KOTA ALAM CAGAK LESTARI</h6>Jl. Raya Ciseuti Ds.Jalancagak Kec.Jalancagak
-                </div>
+                <strong>PERUSAHAAN AIR MINUM<br>TIRTA KOTA ALAM CAGAK LESTARI</strong><br>Jl. Raya Ciseuti Ds.Jalancagak Kec.Jalancagak
             </div>
         </div>
-        {{-- {{ $setup }} --}}
-        <div class="mx-3">
-            <table style="width: 100%">
+        <br>
+        <div class="text-center align-middle">
+            <h6>BUKTI PEMBAYARAN</h6>
+        </div>
+        <div class="row ms-2 me-2">
+            <div class="col-8">
+                <div class="row">
+                    <div class="col-4">
+                        Nama
+                    </div>
+                    <div class="col-8">
+                        {{ $data->customer->name }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        Alamat
+                    </div>
+                    <div class="col-8">
+                        {{ $data->customer->house_no }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        ID Pelanggan
+                    </div>
+                    <div class="col-8">
+                        {{ $data->customer->id }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+
+            </div>
+        </div>
+        <div class="ms-2 me-2">
+            <table class="table table-bordered table-bordered-last">
                 <tr>
-                    <td>
-                        BULAN
-                    </td>
-                    <td colspan="3">
-                        : {{ $billing_date }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        NO. PELANGGAN
-                    </td>
-                    <td colspan="3">
-                        : {{ $data->customer_number }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        NAMA
-                    </td>
-                    <td colspan="3">
-                        : {{ $data->name }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        ALAMAT
-                    </td>
-                    <td colspan="3">
-                        : {{ $data->house_no }}
-                    </td>
-                </tr>
-                <tr><td colspan="4"><div class="text-center">STAND METER (M3)</div></td></tr>
-                <tr>
-                    <td>
-                        PEMAKAIAN BULAN INI
-                    </td>
-                    <td>
-                        : {{ $data->billings[0]->usage }} m<sup>3</sup>
-                    </td>
-                    <td rowspan="2" style="width: 20%">
-                        PEMAKAIAN YANG DI TAGIHKAN
-                    </td>
-                    <td rowspan="2">
-                        : {{ $data->billings[0]->usage - (int)$data->billings[0]->water_meter_count }} m<sup>3</sup>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        PEMAKAIAN BULAN LALU
-                    </td>
-                    <td colspan="3">
-                        : {{ $data->billings[0]->water_meter_count }} m<sup>3</sup>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        BIAYA PEMAKAIAN
-                    </td>
-                    <td colspan="3">
-                        : Rp. {{ number_format($data->billings[0]->price_total) }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        ADMINISTRASI
-                    </td>
-                    <td colspan="3">
-                        : Rp. {{ number_format($data->billings[0]->administration_fees) }}
-                    </td>
-                </tr>
-                {{-- <tr>
-                    <td>
-                        RETRIBUSI
-                    </td>
-                    <td colspan="3">
-                        : 0
-                    </td>
-                </tr> --}}
-                <tr>
-                    <td>
+                    <th rowspan="2" class="text-center align-middle">
+                        BULAN/TAHUN
+                    </th>
+                    <th colspan="2" class="text-center align-middle">
+                        ANGKA WM
+                    </th>
+                    <th rowspan="2" class="text-center align-middle">
+                        Volume M<sup>3</sup>
+                    </th>
+                    <th rowspan="2" class="text-center align-middle">
+                       UANG AIR
+                    </th>
+                    <th rowspan="2" class="text-center align-middle">
+                        BIAYA ADM
+                    </th>
+                    <th rowspan="2" class="text-center align-middle">
                         DENDA
-                    </td>
-                    <td colspan="3">
-                        : Rp. {{ number_format($data->billings[0]->fines) }}
-                    </td>
+                    </th>
+                    <th rowspan="2" class="text-center align-middle">
+                        JUMLAH
+                    </th>
+                </tr>
+                <tr>
+                    <th class="text-center align-middle">
+                        AWAL
+                    </th>
+                    <th class="text-center align-middle">
+                        AKHIR
+                    </th>
                 </tr>
                 <tr>
                     <td>
-                        JUMLAH TAGIHAN
+                        @foreach ($data->detail as $billing)
+                            {{ $billing->billing->billing_date }}<br>
+                        @endforeach
                     </td>
-                    <td colspan="3">
-                        : Rp. {{ number_format($data->billings[0]->price_total + $data->billings[0]->administration_fees + $data->billings[0]->fines) }}
+                    <td class="text-center">
+                        @foreach ($data->detail as $billing)
+                            {{ $billing->billing->water_meter_count }}<br>
+                        @endforeach
+                    </td>
+                    <td class="text-center">
+                        @foreach ($data->detail as $billing)
+                            {{ $billing->billing->usage }}<br>
+                        @endforeach
+                    </td>
+                    <td class="text-center">
+                        @foreach ($data->detail as $billing)
+                            {{ $billing->billing->usage - (int)$billing->billing->water_meter_count }}<br>
+                        @endforeach
+                    </td>
+                    <td class="text-end">
+                        @foreach ($data->detail as $billing)
+                            {{ number_format($billing->price) }}<br>
+                        @endforeach
+                    </td>
+                    <td class="text-end">
+                        @foreach ($data->detail as $billing)
+                            {{ number_format($billing->administration_fee) }}<br>
+                        @endforeach
+                    </td>
+                    <td class="text-end">
+                        @foreach ($data->detail as $billing)
+                            {{ number_format($billing->fines) }}<br>
+                        @endforeach
+                    </td>
+                    <td class="text-end">
+                        @foreach ($data->detail as $billing)
+                            {{ number_format($billing->total) }}<br>
+                        @endforeach
                     </td>
                 </tr>
+                <?php
+                // Initialize the sum variable
+                $totalSum = 0;
+
+                // Iterate over each object in the $data array
+                foreach ($data->detail as $item) {
+                    // Assuming each object has a property detail->total
+                    // Add the total value to the sum
+                    $totalSum += $item->total;
+                }
+                ?>
                 <tr>
-                    <td>
-                        STATUS PEMBAYARAN
-                    </td>
-                    <td>
-                        : {{ ($data->billings[0]->pay_date) ? "LUNAS" : "Belum Bayar" }}
-                    </td>
-                    <td>
-                        JAM CETAK:
-                    </td>
-                    <td>
-                        : {{ now()->timezone('Asia/Jakarta')->format('d-m-Y H:i') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        Bayarlah Semua Tagihan Anda TEPAT WAKTU.
-                    </td>
-                    <td>
-                        REFF:
-                    </td>
-                    <td>
-                        : {{ $data->billings[0]->billing_number }}
-                    </td>
+                    <td colspan="7" class="text-center"><strong>Jumlah</strong></td>
+                    <td class="text-end"><strong>{{ number_format($totalSum) }}</strong></td>
                 </tr>
             </table>
-            <hr>
-            <div class="row">
-                <div class="text-center col-6">
-                    Tanda Tangan Pelanggan
-                </div>
-                <div class="text-center col-6">
-                    Tanda Tangan Petugas
-                </div>
+        </div>
+        <div class="row ms-2 me-2">
+            <div class="col-6">
+                <ul>
+                    <li>
+                        Membayar Rekening Air Tepat waktu
+                    </li>
+                    <li>
+                        Hematlah pemakaian air seperlunya
+                    </li>
+                    <li>
+                        Batas pembayaran sampai Tgl 20
+                    </li>
+                </ul>
+                PT.ROSADI ABADI JAYA
+            </div>
+            <div class="col-6 text-center">
+                <br>
+                Bendahara/Kasir
+                <br><br><br>
+                {{ $setup->cashier_name }}
             </div>
         </div>
     </body>
@@ -212,4 +225,10 @@
             window.print();
         })
     </script>
+    <style>
+        /* Define border for last row */
+        .table-bordered-last tbody tr:last-child {
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
 </html>

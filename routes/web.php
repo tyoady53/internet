@@ -92,6 +92,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/update/{slug}',   [PaymentController::class, 'update'])->name('payment.update');
         Route::post('/store',           [PaymentController::class, 'store'] )->name('payment.store');
         Route::get('/payment/{id}',     [PaymentController::class, 'payment'] )->name('payment.payment');
+        Route::get('/print/{id}',       [PaymentController::class, 'print'] )->name('payment.print');
     });
 
     Route::prefix('master-bill')->group(function () {

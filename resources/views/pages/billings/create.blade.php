@@ -46,7 +46,7 @@
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label class="fw-bold">Hasil baca Water Meter</label>
-                                        <input class="form-control" value="" name="usage" id="usage" type="number" placeholder="Usage">
+                                        <input class="form-control" value="" name="usage" id="usage" type="number" placeholder="Usage" required>
                                     </div>
                                 </div>
                             </div>
