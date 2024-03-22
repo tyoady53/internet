@@ -7,14 +7,20 @@
             <div class="row gx-4">
                 <form>
                     <div class="input-group mb-3">
-                        {{-- <a href="/public/customer/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a> --}}
-                        {{-- <input type="text" class="form-control input-group-text mb-3" placeholder="search by user name . . .">
-
-                        <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> SEARCH</button> --}}
+                        <div class="input-group mb-3">
+                            <form role="form" method="get" action="{{ route('report.index') }}">
+                                <select class="form-control input-group-text mb-3" name="periode">
+                                @foreach ($filters as $filter)
+                                    <option value="{{ $filter->key }}" {{ request('periode') == $filter->key ? 'selected' : '' }}>{{ $filter->value }}</option>
+                                @endforeach
+                                </select>
+                                <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> Filter</button>
+                            </form>
+                        </div>
                     </div>
                 </form>
-                <h5></h5>
                 <div class="table-responsive">
+                    <h5>TAGIHAN BELUM DI BAYAR</h5>
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
@@ -96,7 +102,8 @@
                 <hr>
                 {{-- {{ $paid }} --}}
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover" id="example">
+                    <h5>TAGIHAN SUDAH DI BAYAR</h5>
+                    <table class="table table-striped table-bordered table-hover" id="example1">
                         <thead>
                             <tr>
                                 <th scope="col" class="text-center"> Nama </th>
@@ -271,6 +278,9 @@
     <script>
         $(document).ready(function($) {
             new DataTable('#example', {
+                order: [0, 'desc']
+            });
+            new DataTable('#example1', {
                 order: [0, 'desc']
             });
         });

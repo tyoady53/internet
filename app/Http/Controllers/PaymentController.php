@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\PaymentDetail;
 use App\Models\SetupProgram;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -18,7 +19,42 @@ class PaymentController extends Controller
      */
     public function index()
     {
+        // dd(request(),Carbon::now()->format('Y-m'));
+        $dates = CustomerBilling::select('billing_date')->distinct()->get();
         $now = Carbon::now();
+        $from_mo = Carbon::parse($dates[0]->billing_date);
+        $month_arr = new Collection();
+        $monthDiff = ($now->format('Y') - $from_mo->format('Y')) * 12 + ($now->format('m') - $from_mo->format('m')) + 1;
+        $months = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+        for ($i = 0; $i < $monthDiff; $i++){
+            $month  = $from_mo->format('m')+$i;
+            $year   = $from_mo->format('Y');
+            $monthsBetween = $month % 12;
+            if($month > 12){
+                $yearsBetween = floor($month / 12);
+                if($monthsBetween > 0){
+                    if($monthsBetween < 10){
+                        $month_current = '0'.$monthsBetween;
+                    } else {
+                        $month_current = $monthsBetween;
+                    }
+                    // $month_current = $monthsBetween;
+                    $year_current = $year+$yearsBetween;
+                } else {
+                    $month_current = 12;
+                    $year_current = $year+$yearsBetween-1;
+                }
+            } else {
+                if($month < 10){
+                    $month_current = '0'.$month;
+                } else {
+                    $month_current = $month;
+                }
+                $year_current = $year;
+            }
+            $month_arr->push((object)['key' => $year_current.'-'.$month_current, 'value' => $year_current.'-'.$months[$month_current-1]]);
+        }
+
         $users = Customer::with(['billings.consumption',
         'billings'=> function ($query) use ($now) {
             $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->whereNull('pay_date');
@@ -26,14 +62,20 @@ class PaymentController extends Controller
             $query->whereNull('pay_date');
         })->get();
 
-        $paid = Payment::with('detail.billing','customer')->get();
+        if(request()->periode){
+            $periode = request()->periode;
+        } else {
+            $periode = Carbon::now()->format('Y-m');
+        }
+        $paid = Payment::where('payment','LIKE', '%'.$periode.'%')->with('detail.billing','customer')->get();
 
-        // dd($paid);
+        // dd($paid,$periode);
 
         return view('pages.payment.index',[
             'data'      => $users,
             'paid'      => $paid,
             'setup'     => SetupProgram::where('id',1)->first(),
+            'filters'   => $month_arr,
         ]);
     }
 
