@@ -15,6 +15,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.3.0/paper.css">
+
     <!-- Nucleo Icons -->
     <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
@@ -63,10 +65,15 @@
                 }
             }
         </style>
+        {{-- <style>@page { size: A5 landscape;margin: 0;
+        }</style> --}}
     </head>
-    <body>
-        <div class="row ms-2 me-2">
-            <div class="col-12">
+    <body class="A5 landscape">
+        <div class="row ms-2 mt-1">
+            <div class="col-2 mt-1">
+                <img src="{{ asset('img/logo-bk.png') }}" style="height: 60px;">
+            </div>
+            <div class="col-10">
                 <strong>PERUSAHAAN AIR MINUM<br>TIRTA KOTA ALAM CAGAK LESTARI</strong><br>Jl. Raya Ciseuti Ds.Jalancagak Kec.Jalancagak
             </div>
         </div>
@@ -191,9 +198,9 @@
                     $totalSum += $item->total;
                 }
                 ?>
-                <tr>
-                    <td colspan="7" class="text-center"><strong>Jumlah</strong></td>
-                    <td class="text-end"><strong>{{ number_format($totalSum) }}</strong></td>
+                <tr class="bottom" style="border-bottom: 3pt solid black;">
+                    <td colspan="7" class="text-center bottom"><strong>Jumlah</strong></td>
+                    <td class="text-end bottom"><strong>{{ number_format($totalSum) }}</strong></td>
                 </tr>
             </table>
         </div>
@@ -220,6 +227,31 @@
             </div>
         </div>
     </body>
+    <style>
+        .table-bordered tbody tr {
+            border: 3px solid black;
+        }
+
+        .bottom {
+            border: 3px solid black;
+        }
+
+        /* tr {
+            border-bottom: 3pt solid black;
+        } */
+
+        /* .table-bordered tbody tr td {
+            border: 3px solid black;
+        } */
+
+        .table-bordered thead tr {
+            border: 3px solid black;
+        }
+
+        .table-bordered thead tr th {
+            border: 3px solid black;
+        }
+    </style>
     <script>
         $(document).ready(function($) {
             window.print();
