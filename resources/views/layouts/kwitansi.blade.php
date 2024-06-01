@@ -69,17 +69,23 @@
         }</style> --}}
     </head>
     <body class="A5 landscape">
-        <div class="row ms-2 mt-1">
-            <div class="col-2 mt-1">
-                <img src="{{ asset('img/logo-bk.png') }}" style="height: 60px;">
+        <div>
+            <div class="row ms-2 mt-1">
+                <div class="col-2 mt-1">
+                    <img src="{{ asset('img/logo-bk.png') }}" style="height: 60px;">
+                </div>
+                <div class="col-10">
+                    <strong>PERUSAHAAN AIR MINUM<br>TIRTA KOTA ALAM CAGAK LESTARI</strong><br>Jl. Raya Ciseuti Ds.Jalancagak Kec.Jalancagak
+                </div>
             </div>
-            <div class="col-10">
-                <strong>PERUSAHAAN AIR MINUM<br>TIRTA KOTA ALAM CAGAK LESTARI</strong><br>Jl. Raya Ciseuti Ds.Jalancagak Kec.Jalancagak
+            <div>
+                Tanggal Cetak : {{ Carbon\Carbon::now()->format('d-M-Y H:i') }}
             </div>
         </div>
+
         <br>
         <div class="text-center align-middle">
-            <h6>BUKTI PEMBAYARAN</h6>
+            <strong>BUKTI PEMBAYARAN</strong>
         </div>
         <div class="row ms-2 me-2">
             <div class="col-8">

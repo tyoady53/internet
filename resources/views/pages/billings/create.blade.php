@@ -91,15 +91,18 @@
                 var usage = $("#usage").val();
                 var last_usage = $("#lat_usage").val();
                 var inputString = usage - last_usage;
-
+                var minimal = 0;
                 const formatter = new Intl.NumberFormat('en');
                 // var total = document.getElementById('usage');
                 for(var i = 0;i < billing_arr.length; i++){
                     if(inputString > (billing_arr[billing_arr.length - 1].minimal) - 1){
+                        if(billing_arr[i].minimal > 0){
+                            minimal = billing_arr[i].minimal - 1;
+                        }
                         if(inputString > billing_arr[i].minimal) {
                             if(inputString > billing_arr[i].maximal){
-                                a += '<label>'+billing_arr[i].minimal+'-'+billing_arr[i].maximal+' <br> &nbsp'+(billing_arr[i].maximal - (billing_arr[i].minimal -1)) +'x'+ formatter.format(billing_arr[i].price)+' = Rp'+formatter.format((billing_arr[i].maximal - (billing_arr[i].minimal -1)) * billing_arr[i].price)+'</label> <br>';
-                                total += (billing_arr[i].maximal - (billing_arr[i].minimal -1)) * billing_arr[i].price;
+                                a += '<label>'+billing_arr[i].minimal+'-'+billing_arr[i].maximal+' <br> &nbsp'+(billing_arr[i].maximal - minimal) +'x'+ formatter.format(billing_arr[i].price)+' = Rp'+formatter.format((billing_arr[i].maximal - minimal) * billing_arr[i].price)+'</label> <br>';
+                                total += (billing_arr[i].maximal - minimal) * billing_arr[i].price;
                             }
                             else {
                                 a += '<label> >'+billing_arr[i].minimal+' <br> &nbsp'+(inputString - (billing_arr[i].minimal - 1)) +'x'+ formatter.format(billing_arr[i].price)+' = Rp'+formatter.format((inputString - (billing_arr[i].minimal - 1)) * billing_arr[i].price)+'</label> <br>';
@@ -110,14 +113,22 @@
                             total += (inputString - (billing_arr[i].minimal - 1)) * billing_arr[i].price;
                         }
                     } else {
-                        if(inputString > (billing_arr[i].minimal - 1)) {
-                            if(inputString > billing_arr[i].maximal){
-                                a += '<label>'+billing_arr[i].minimal+'-'+billing_arr[i].maximal+' <br> &nbsp'+(billing_arr[i].maximal - (billing_arr[i].minimal -1)) +'x'+ formatter.format(billing_arr[i].price)+' = Rp'+formatter.format((billing_arr[i].maximal - (billing_arr[i].minimal -1)) * billing_arr[i].price)+'</label> <br>';
-                                total += (billing_arr[i].maximal - (billing_arr[i].minimal -1)) * billing_arr[i].price;
+                        if(billing_arr[i].billing_option == 'static'){
+                            if(billing_arr[i].minimal > 0){
+                                minimal = billing_arr[i].minimal - 1;
                             }
-                            else {
-                                a += '<label> '+billing_arr[i].minimal+'-'+billing_arr[i].maximal+' <br> &nbsp'+(inputString - (billing_arr[i].minimal - 1)) +'x'+ formatter.format(billing_arr[i].price)+' = Rp'+formatter.format((inputString - (billing_arr[i].minimal - 1)) * billing_arr[i].price)+'</label> <br>';
-                                total += (inputString - (billing_arr[i].minimal - 1)) * billing_arr[i].price;
+                            a += '<label> '+billing_arr[i].minimal+'-'+billing_arr[i].maximal+' <br> &nbsp'+(billing_arr[i].maximal - minimal) +'x'+ formatter.format(billing_arr[i].price)+' = Rp'+formatter.format((billing_arr[i].maximal - minimal)  * billing_arr[i].price)+'</label> <br>';
+                            total += (billing_arr[i].maximal - minimal) * billing_arr[i].price;
+                        } else {
+                            if(inputString > (billing_arr[i].minimal - 1)) {
+                                if(inputString > billing_arr[i].maximal){
+                                    a += '<label>'+billing_arr[i].minimal+'-'+billing_arr[i].maximal+' <br> &nbsp' + (billing_arr[i].maximal - (billing_arr[i].minimal -1)) + 'x'+ formatter.format(billing_arr[i].price)+' = Rp'+formatter.format((billing_arr[i].maximal - (billing_arr[i].minimal -1)) * billing_arr[i].price)+'</label> <br>';
+                                    total += (billing_arr[i].maximal - (billing_arr[i].minimal -1)) * billing_arr[i].price;
+                                }
+                                else {
+                                    a += '<label> '+billing_arr[i].minimal+'-'+billing_arr[i].maximal+' <br> &nbsp'+(inputString - (billing_arr[i].minimal - 1)) +'x'+ formatter.format(billing_arr[i].price)+' = Rp'+formatter.format((inputString - (billing_arr[i].minimal - 1)) * billing_arr[i].price)+'</label> <br>';
+                                    total += (inputString - (billing_arr[i].minimal - 1)) * billing_arr[i].price;
+                                }
                             }
                         }
                     }

@@ -124,6 +124,7 @@ class CustomerBillingController extends Controller
         $print_count = PrintCount::where('billing_date',$request->periode)->first();
         // dd($inputString,$data,$request->periode);
         $billing_no = '';
+        $minimal = 0;
         if(!$print_count){
             PrintCount::create([
                 'billing_date'  => $request->periode,
@@ -159,32 +160,45 @@ class CustomerBillingController extends Controller
             'billing_number'    => $billing_no,
         ]);
         foreach ($billings_collection as $bill) {
-            if($inputString > $bill->minimal - 1){
+            if($bill->minimal > 0){
+                $minimal = $bill->minimal - 1;
+            }
+            if($inputString > $minimal){
                 if($inputString > $bill->minimal) {
-                    if($inputString > $bill->maximal){
-                        $a = $a+($bill->maximal - ($bill->minimal -1)) * $bill->price;
+                    if($bill->billing_option == 'static'){
+                        $a = $a+($bill->maximal - $minimal) * $bill->price;
                         CustomerConsumption::create([
                             'consumption_id'    => $insert->id,
                             'billing_id'        => $bill->id,
-                            'usage'             => $bill->maximal - ($bill->minimal -1),
+                            'usage'             => $bill->maximal - $minimal,
                             'price'             => $bill->price
                         ]);
-                    }
-                    else {
-                        $a = $a+($inputString - ($bill->minimal -1)) * $bill->price;
-                        CustomerConsumption::create([
-                            'consumption_id'    => $insert->id,
-                            'billing_id'        => $bill->id,
-                            'usage'             => $inputString - ($bill->minimal -1),
-                            'price'             => $bill->price
-                        ]);
+                    } else {
+                        if($inputString > $bill->maximal){
+                            $a = $a+($bill->maximal - $minimal) * $bill->price;
+                            CustomerConsumption::create([
+                                'consumption_id'    => $insert->id,
+                                'billing_id'        => $bill->id,
+                                'usage'             => $bill->maximal - $minimal,
+                                'price'             => $bill->price
+                            ]);
+                        }
+                        else {
+                            $a = $a+($inputString - $minimal) * $bill->price;
+                            CustomerConsumption::create([
+                                'consumption_id'    => $insert->id,
+                                'billing_id'        => $bill->id,
+                                'usage'             => $inputString - $minimal,
+                                'price'             => $bill->price
+                            ]);
+                        }
                     }
                 } else {
-                    $a = $a+($inputString - ($bill->minimal -1)) * $bill->price;
+                    $a = $a+($inputString - $minimal) * $bill->price;
                     CustomerConsumption::create([
                         'consumption_id'    => $insert->id,
                         'billing_id'        => $bill->id,
-                        'usage'             => $inputString - ($bill->minimal -1),
+                        'usage'             => $inputString - $minimal,
                         'price'             => $bill->price
                     ]);
                     // a += '<label> >'+billing_arr[i].minimal+' <br> &nbsp'+($inputString - (billing_arr[i].minimal - 1)) +'x'+ billing_arr[i].price+' = Rp'+($inputString - (billing_arr[i].minimal - 1)) * billing_arr[i].price+'</label> <br>';
@@ -193,26 +207,22 @@ class CustomerBillingController extends Controller
             } else {
                 if($inputString > ($bill->minimal - 1)) {
                     if($inputString > $bill->maximal){
-                        $a = $a+($bill->maximal - ($bill->minimal -1)) * $bill->price;
+                        $a = $a+($bill->maximal - $minimal) * $bill->price;
                         CustomerConsumption::create([
                             'consumption_id'    => $insert->id,
                             'billing_id'        => $bill->id,
-                            'usage'             => $bill->maximal - ($bill->minimal -1),
+                            'usage'             => $bill->maximal - $minimal,
                             'price'             => $bill->price
                         ]);
-                        // a += '<label>'+$bill->minimal+'-'+$bill->maximal+' <br> &nbsp'+($bill->maximal - ($bill->minimal -1)) +'x'+ $bill->price+' = Rp'+($bill->maximal - ($bill->minimal -1)) * $bill->price+'</label> <br>';
-                        // total += ($bill->maximal - ($bill->minimal -1)) * $bill->price;
                     }
                     else {
-                        $a = $a+($inputString - ($bill->minimal -1)) * $bill->price;
+                        $a = $a+($inputString - $minimal) * $bill->price;
                         CustomerConsumption::create([
                             'consumption_id'    => $insert->id,
                             'billing_id'        => $bill->id,
-                            'usage'             => $inputString - ($bill->minimal -1),
+                            'usage'             => $inputString - $minimal,
                             'price'             => $bill->price
                         ]);
-                        // a += '<label> '+$bill->minimal+'-'+$bill->maximal+' <br> &nbsp'+($inputString - ($bill->minimal - 1)) +'x'+ $bill->price+' = Rp'+($inputString - ($bill->minimal - 1)) * $bill->price+'</label> <br>';
-                        // total += ($inputString - ($bill->minimal - 1)) * $bill->price;
                     }
                 }
             }
@@ -284,7 +294,7 @@ class CustomerBillingController extends Controller
         ->first();
         CustomerBilling::where('id',$get->billings[0]->id)->update([
             // 'late'  => $get->billings[0]->late,
-            'fines' => $get->billings[0]->late * $setup->fine_fee
+            'fines' => 1 * $setup->fine_fee
         ]);
         $data = $get = Customer::where('encrypted_id',$unique_id)->with(['billings.consumption',
         'billings'=> function ($query) use ($now,$date) {
@@ -352,7 +362,7 @@ class CustomerBillingController extends Controller
         ->get();
         dd($get);
         CustomerBilling::where('id',$get->billings[0]->id)->update([
-            'fines' => $get->billings[0]->late * $setup->fine_fee,
+            'fines' => 1 * $setup->fine_fee,
             'pay_date' => $now
         ]);
 
