@@ -39,6 +39,8 @@ class CustomerBillingController extends Controller
             $query->orderBy('tempo','DESC')->first();
         }])->get();
 
+        // dd($customer[0]->id);
+
         $year_arr = array();
         $billings = array();
         $now = Carbon::now();
@@ -83,6 +85,12 @@ class CustomerBillingController extends Controller
             $month_arr->push((object)['key' => $year_current.'-'.$month_current, 'value' => $year_current.'-'.$months[$month_current-1]]);
         }
 
+        $last_data = CustomerBilling::where('customer_id',$customer[0]->id)->latest()->first();
+        if($last_data){
+            $selected = $last_data->billing_date;
+        } else {
+            $selected = '2023-11';
+        }
         // for ($i = 0; $i < count($year_arr); $i++){
         //     $year_now = $year_arr[$i];
         //     // foreach ($months as $idx => $month) {
@@ -95,16 +103,20 @@ class CustomerBillingController extends Controller
         //         $month_arr->push((object)['key' => substr($year_now,0,4).'-'.$now_idx, 'value' => substr($year_now,0,4).'-'.$months[$j]]);
         //     }
         // }
+        // dd($month_arr->sortByDesc('key'));
         $billings_collection = MasterBilling::get();
         foreach ($billings_collection as $bill) {
             array_push($billings,$bill);
         }
 
+        // dd($billings_collection[count($billings_collection) - 1]);
+
         return view('pages.billings.create',[
-            'month_arr'     => $month_arr,
+            'month_arr'     => $month_arr->sortByDesc('key'),
             'customer'      => $customer,
             'billings'      => $billings,
             'unique_id'     => $unique_id,
+            'selected'      => $selected
         ]);
     }
 
@@ -113,7 +125,6 @@ class CustomerBillingController extends Controller
      */
     public function store(Request $request,$unique_id)
     {
-        // $inputString = $request->usage;
         $a = 0; $total = 0;
         $customer = Customer::where('encrypted_id',$unique_id)->first();
         $billing_date = new Carbon($request->periode.'-20');
@@ -122,7 +133,6 @@ class CustomerBillingController extends Controller
         $data = CustomerBilling::where('customer_id',$customer->id)->orderBy('billing_date','DESC')->first();
         $inputString = $request->usage - ($data ? $data->usage : 0);
         $print_count = PrintCount::where('billing_date',$request->periode)->first();
-        // dd($inputString,$data,$request->periode);
         $billing_no = '';
         $minimal = 0;
         if(!$print_count){
@@ -163,6 +173,14 @@ class CustomerBillingController extends Controller
             if($bill->minimal > 0){
                 $minimal = $bill->minimal - 1;
             }
+            if($inputString == 0){
+                CustomerConsumption::create([
+                    'consumption_id'    => $insert->id,
+                    'billing_id'        => $bill->id,
+                    'usage'             => $bill->maximal - $minimal,
+                    'price'             => $bill->price
+                ]);
+            }
             if($inputString > $minimal){
                 if($inputString > $bill->minimal) {
                     if($bill->billing_option == 'static'){
@@ -201,8 +219,6 @@ class CustomerBillingController extends Controller
                         'usage'             => $inputString - $minimal,
                         'price'             => $bill->price
                     ]);
-                    // a += '<label> >'+billing_arr[i].minimal+' <br> &nbsp'+($inputString - (billing_arr[i].minimal - 1)) +'x'+ billing_arr[i].price+' = Rp'+($inputString - (billing_arr[i].minimal - 1)) * billing_arr[i].price+'</label> <br>';
-                    // total += ($inputString - (billing_arr[i].minimal - 1)) * billing_arr[i].price;
                 }
             } else {
                 if($inputString > ($bill->minimal - 1)) {
@@ -226,6 +242,10 @@ class CustomerBillingController extends Controller
                     }
                 }
             }
+        }
+
+        if($a == 0){
+            $a =($billings_collection[0]->maximal - $billings_collection[0]->minimal) * $billings_collection[0]->price;
         }
 
         $insert->update([

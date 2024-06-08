@@ -53,7 +53,7 @@
                             </td>
                             <td class="text-end">
                                 @foreach ($u->billings as $billing)
-                                    {{ number_format($billing->late*$setup->fine_fee) }}<br>
+                                    {{ number_format(1  *$setup->fine_fee) }}<br>
                                 @endforeach
                             </td>
                             <td class="text-center">
@@ -81,7 +81,7 @@
                             </td>
                             <td class="text-end">
                                 @foreach ($u->billings as $billing)
-                                    {{ number_format(($billing->price_total) + ($billing->late*$setup->fine_fee)) }}<br>
+                                    {{ number_format(($billing->price_total) + (1*$setup->fine_fee)) }}<br>
                                 @endforeach
                             </td>
                             <td class="text-center">
@@ -158,7 +158,7 @@
                                 </td>
                                 <td class="text-end">
                                     @foreach ($u->detail as $billing)
-                                        {{ number_format(($billing->billing->price_total) + ($billing->billing->late*$setup->fine_fee)) }}<br>
+                                        {{ number_format(($billing->billing->price_total) + (1*$setup->fine_fee)) }}<br>
                                     @endforeach
                                 </td>
                                 <td class="text-center">

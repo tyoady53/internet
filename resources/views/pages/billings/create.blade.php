@@ -31,7 +31,7 @@
                                         <label class="fw-bold">Periode</label>
                                         <select class="form-control" name="periode">
                                             @foreach ($month_arr as $month)
-                                                <option value="{{ $month->key }}">{{ $month->value }}</option>
+                                                <option value="{{ $month->key }}" {{ $selected == $month->key ? 'selected' : '' }}>{{ $month->value }}</option>
                                             @endforeach
                                         </select>
                                     </div>

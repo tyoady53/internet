@@ -150,7 +150,7 @@ class PaymentController extends Controller
             ]);
 
             foreach($get->billings as $billing){
-                $fines = $billing->late * $setup->fine_fee;
+                $fines = 1 * $setup->fine_fee;
                 CustomerBilling::where('id',$billing->id)->update([
                     'fines'     => $fines,
                     'pay_date'  => $now
