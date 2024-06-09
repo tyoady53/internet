@@ -25,6 +25,7 @@
                     <thead>
                         <tr>
                             <th scope="col" class="text-center"> Nama </th>
+                            <th scope="col" class="text-center"> No. Rumah </th>
                             <th scope="col" class="text-center"> Tanggal Billing </th>
                             <th scope="col" class="text-center"> Terlambat </th>
                             <th scope="col" class="text-center"> Denda </th>
@@ -41,6 +42,7 @@
                         {{-- {{ $u }} --}}
                         <tr>
                             <td>{{ $u->name }}</td>
+                            <td>{{ $u->house_no }}</td>
                             <td>
                                 @foreach ($u->billings as $billing)
                                     {{ $billing->billing_date }}<br>
@@ -107,6 +109,7 @@
                         <thead>
                             <tr>
                                 <th scope="col" class="text-center"> Nama </th>
+                                <th scope="col" class="text-center"> No. Rumah </th>
                                 <th scope="col" class="text-center"> Tanggal Billing </th>
                                 <th scope="col" class="text-center"> Terlambat </th>
                                 <th scope="col" class="text-center"> Denda </th>
@@ -122,6 +125,7 @@
                             @foreach ($paid as $u)
                             <tr>
                                 <td>{{ $u->customer->name }}</td>
+                                <td>{{ $u->customer->house_no }}</td>
                                 <td>
                                     @foreach ($u->detail as $billing)
                                         {{ $billing->billing->billing_date }}<br>
@@ -278,7 +282,7 @@
     <script>
         $(document).ready(function($) {
             new DataTable('#example', {
-                order: [0, 'desc']
+                order: [1, 'asc']
             });
             new DataTable('#example1', {
                 order: [0, 'desc']
