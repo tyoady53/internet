@@ -8,13 +8,13 @@
                 <form role="form" method="post" action="{{ route('billing.store',$unique_id) }}">
                     @csrf
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="fw-bold">Nama</label>
                                 <input class="form-control" value="{{ $customer[0]->name }}" name="name" type="text" placeholder="Name" readonly>
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="fw-bold">No.</label>
                                 <input class="form-control" value="{{ $customer[0]->house_no }}" name="house_no" type="text" placeholder="Name" readonly>
