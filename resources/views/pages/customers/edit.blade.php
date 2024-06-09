@@ -8,10 +8,16 @@
                 <form role="form" method="post" action="{{ route('customer.update', $user->encrypted_id) }}">
                     @csrf
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="fw-bold">Name</label>
                                 <input class="form-control" value="{{ $user->name }}" name="name" type="text" placeholder="Name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="fw-bold">No.</label>
+                                <input class="form-control" value="{{ $user->house_no }}" name="house_no" type="text" placeholder="House Number">
                             </div>
                         </div>
                     </div>

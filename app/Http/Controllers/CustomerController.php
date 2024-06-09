@@ -102,6 +102,9 @@ class CustomerController extends Controller
         if($request->address){
             $array_update['address'] = $request->address;
         }
+        if($request->house_no){
+            $array_update['house_no'] = $request->house_no;
+        }
         if($request->billing_number){
             $array_update['billing_number'] = $request->billing_number;
         }
