@@ -127,12 +127,23 @@ class PaymentController extends Controller
         //
     }
 
-    public function payment($unique_id)
+    public function payment(Request $request,$unique_id)
     {
+        $a = '';
+        $validate = $this->validate($request, [
+            'billing_id' => 'required|array|min:1',
+        ]);
+        // if(count(request()->billing_id) > 0){
+        //     foreach(request()->billing_id as $billing){
+        //         $a .= 'billing id : '.$billing.', ';
+        //     }
+        // }
+        // dd($unique_id,$request,$a,$validate);
         $now = Carbon::now();
         $get = Customer::where('encrypted_id',$unique_id)->with(['billings.consumption',
-        'billings'=> function ($query) use ($now) {
-            $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->whereNull('pay_date');
+        'billings'=> function ($query) use ($now,$request) {
+            // $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->whereNull('pay_date');
+            $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->whereIn('id',$request->billing_id);
         }])
         ->first();
         // dd($get);

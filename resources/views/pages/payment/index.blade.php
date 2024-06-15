@@ -19,6 +19,16 @@
                         </div>
                     </div>
                 </form>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <p><h3 style="color:white">Pilih setidaknya 1 billing yang akan di bayar.</h3></p>
+                        {{-- <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul> --}}
+                    </div>
+                @endif
                 <div class="table-responsive">
                     <h5>TAGIHAN BELUM DI BAYAR</h5>
                 <table class="table table-striped table-bordered table-hover" id="example">
@@ -41,61 +51,65 @@
                         @foreach ($data as $u)
                         {{-- {{ $u }} --}}
                         <tr>
-                            <td>{{ $u->name }}</td>
-                            <td>{{ $u->house_no }}</td>
-                            <td>
-                                @foreach ($u->billings as $billing)
-                                    {{ $billing->billing_date }}<br>
-                                @endforeach
-                            </td>
-                            <td>
-                                @foreach ($u->billings as $billing)
-                                    {{ $billing->late }} Bulan<br>
-                                @endforeach
-                            </td>
-                            <td class="text-end">
-                                @foreach ($u->billings as $billing)
-                                    {{ number_format(1  *$setup->fine_fee) }}<br>
-                                @endforeach
-                            </td>
-                            <td class="text-center">
-                                @if($u->pay_date == null)
-                                    Belum Dibayar
-                                @else
-                                    Terbayar
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @foreach ($u->billings as $billing)
-                                    {{ $billing->water_meter_count }} m<sup>3</sup> <br>
-                                @endforeach
+                            <form action="{{ 'payment/'.$u->encrypted_id }}" method="POST">
+                                @csrf
+                                <td>{{ $u->name }}</td>
+                                <td>{{ $u->house_no }}</td>
+                                <td>
+                                    @foreach ($u->billings as $billing)
+                                        <input type="checkbox" name="billing_id[]" value="{{ $billing->id }}" checked>
+                                        {{ $billing->billing_date }}<br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach ($u->billings as $billing)
+                                        {{ $billing->late }} Bulan<br>
+                                    @endforeach
+                                </td>
+                                <td class="text-end">
+                                    @foreach ($u->billings as $billing)
+                                        {{ number_format(1  *$setup->fine_fee) }}<br>
+                                    @endforeach
+                                </td>
+                                <td class="text-center">
+                                    @if($u->pay_date == null)
+                                        Belum Dibayar
+                                    @else
+                                        Terbayar
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @foreach ($u->billings as $billing)
+                                        {{ $billing->water_meter_count }} m<sup>3</sup> <br>
+                                    @endforeach
 
-                            </td>
-                            <td class="text-center">
-                                @foreach ($u->billings as $billing)
-                                    {{ $billing->usage }} m<sup>3</sup><br>
-                                @endforeach
-                            </td>
-                            <td class="text-center">
-                                @foreach ($u->billings as $billing)
-                                    {{ $billing->usage - (int)$billing->water_meter_count }} m<sup>3</sup> <br>
-                                @endforeach
-                            </td>
-                            <td class="text-end">
-                                @foreach ($u->billings as $billing)
-                                    {{ number_format(($billing->price_total) + (1*$setup->fine_fee)) }}<br>
-                                @endforeach
-                            </td>
-                            <td class="text-center">
-                                @if($u->pay_date == null)
-                                    <a href="{{ 'payment/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a>
-                                    <!--  onclick="window.open(this.href, 'new', 'popup'); return false;"  -->
-                                @else
-                                    <span class="badge bg-success shadow border-0 ms-2 mb-2">
-                                        Lunas
-                                    </span>
-                                @endif
-                            </td>
+                                </td>
+                                <td class="text-center">
+                                    @foreach ($u->billings as $billing)
+                                        {{ $billing->usage }} m<sup>3</sup><br>
+                                    @endforeach
+                                </td>
+                                <td class="text-center">
+                                    @foreach ($u->billings as $billing)
+                                        {{ $billing->usage - (int)$billing->water_meter_count }} m<sup>3</sup> <br>
+                                    @endforeach
+                                </td>
+                                <td class="text-end">
+                                    @foreach ($u->billings as $billing)
+                                        {{ number_format(($billing->price_total) + (1*$setup->fine_fee)) }}<br>
+                                    @endforeach
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-success btn-sm me-2" type="submit"><i class="fa fa-money me-1"></i> Bayar
+                                    {{-- @if($u->pay_date == null)
+                                        <a href="{{ 'payment/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a>
+                                    @else
+                                        <span class="badge bg-success shadow border-0 ms-2 mb-2">
+                                            Lunas
+                                        </span>
+                                    @endif --}}
+                                </td>
+                            </form>
                         </tr>
                         @endforeach
                     </tbody>

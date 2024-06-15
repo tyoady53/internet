@@ -56,7 +56,6 @@
         <style>
             @media print {
                 @page {
-                    size: A5 landscape;
                     margin: 0;
                 }
 
@@ -68,7 +67,7 @@
         {{-- <style>@page { size: A5 landscape;margin: 0;
         }</style> --}}
     </head>
-    <body class="A5 landscape">
+    <body class="p-4">
         <div>
             <div class="row ms-2 mt-1">
                 <div class="col-2 mt-1">
@@ -79,7 +78,7 @@
                 </div>
             </div>
             <div>
-                Tanggal Cetak : {{ Carbon\Carbon::now()->format('d-M-Y H:i') }}
+                &nbsp&nbsp&nbsp&nbsp&nbspTanggal Cetak : {{ Carbon\Carbon::now()->format('d-M-Y H:i') }}
             </div>
         </div>
 

@@ -33,20 +33,33 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'name'          => 'required',
+            'address'       => 'required',
+            'billing'       => 'required',
+            'house_no'      => 'required',
+            'phone'         => 'required',
+        ]);
+
         $year_date =Carbon::now()->format('Ym');
-        // dd($year_date);
         $last_data = Customer::where('customer_number','LIKE','%'.$year_date.'%')->orderBy('customer_number','DESC')->first();
         if($last_data){
             $customer_number = (int)$last_data->customer_number + 1;
         } else {
             $customer_number = $year_date.'001';
         }
+        $water_meter_no = "";
+        if($request->water_meter_no){
+            $water_meter_no = $request->water_meter_no;
+        }
         $insert = Customer::create([
             'name'          => $request->name,
             'address'       => $request->address,
             'status'        => '1',
             'encrypted_id'  => '-',
+            'water_meter_no'=> $water_meter_no,
             'billing_number'=> $request->billing,
+            'house_no'      => $request->house_no,
             'phone'         => $request->phone,
             'customer_number'   => $customer_number,
         ]);

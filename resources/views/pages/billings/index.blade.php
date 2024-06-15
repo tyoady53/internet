@@ -57,7 +57,7 @@
                             </td>
                             <td class="text-center">
                                 <a href="{{ './create/'.$u->encrypted_id }}" class="btn btn-primary btn-sm me-2"><i class="fa fa-plus-circle me-2"></i> Buat Billing</a>
-                                <a href="{{ './pay/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Pembayaran</a>
+                                {{-- <a href="{{ './pay/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Pembayaran</a> --}}
                             </td>
                         </tr>
                         @endforeach
@@ -173,6 +173,7 @@
     <script>
         $(document).ready(function($) {
             new DataTable('#example', {
+                pageLength: 100,
                 order: [[4, 'asc'],[2, 'asc']]
             });
         })
