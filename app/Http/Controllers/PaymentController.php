@@ -7,6 +7,7 @@ use App\Models\CustomerBilling;
 use App\Models\MasterBilling;
 use App\Models\Payment;
 use App\Models\PaymentDetail;
+use App\Models\PaymentPaidDetail;
 use App\Models\SetupProgram;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -235,12 +236,79 @@ class PaymentController extends Controller
 
     public function print($unique_id)
     {
-        $data = Payment::where('encrypted_id',$unique_id)->with('detail.billing','customer')->first();
+        $data = Payment::where('encrypted_id',$unique_id)->with('detail.billing','customer','pays')->first();
         $setup = SetupProgram::where('id',1)->first();
         // dd($data);
         return view('layouts.kwitansi',[
             'data' => $data,
             'setup'=> $setup,
         ])->with('success','created');
+    }
+
+    public function pays($unique_id, Request $request)
+    {
+        $data = Payment::where('encrypted_id',$unique_id)->first();
+        $data->update([
+            'paid'  => (int)$data->paid + (int)$request->amount
+        ]);
+        $insert = PaymentPaidDetail::create([
+            'payment_id'    => $data->id,
+            'payment_amount'=> $request->amount
+        ]);
+        if($insert){
+            return response()->json([
+                'status'    => 200,
+                'message'   => 'Insert Success',
+            ]);
+        }
+        return response()->json([
+            'status'    => 500,
+            'message'   => 'Insert Failed',
+        ]);
+    }
+
+    public function get($unique_id){
+        $data = Payment::where('encrypted_id',$unique_id)->with('detail.billing','customer','pays')->first();
+        // dd($data);
+        return response()->json([
+            'status'    => 200,
+            'message'   => 'Data Billing '.$data->customer->house_no." Tanggal ".$data->payment,
+            'data'      => $data,
+            'token_'    => csrf_token()
+        ]);
+    }
+
+    public function sync(){
+        $array_data = array();
+        $datas = Payment::where('total',0)->with('detail')->get();
+        if(count($datas) > 0){
+            foreach($datas as $data){
+                $total = 0;
+                foreach($data->detail as $detail){
+                    $total = $total + $detail->total;
+                }
+                $data->update([
+                    'total' => $total
+                ]);
+                // array_push($array_data,$total);
+            }
+            return response()->json([
+                'icon'  => 'success',
+                'title' => 'Success!',
+                'text'  => 'Sync Sukses'
+            ]);
+        } else {
+            return response()->json([
+                'icon'  => 'info',
+                'title' => 'Info!',
+                'text'  => 'Tidak ada data untuk di Sync'
+            ]);
+        }
+
+        return response()->json([
+            'icon'  => 'warning',
+            'title' => 'Error!',
+            'text'  => 'Sync Gagal'
+        ]);
     }
 }

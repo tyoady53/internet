@@ -92,7 +92,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/update/{slug}',   [PaymentController::class, 'update'])->name('payment.update');
         Route::post('/store',           [PaymentController::class, 'store'] )->name('payment.store');
         Route::post('/payment/{id}',    [PaymentController::class, 'payment'] )->name('payment.payment');
+        Route::post('/pays/{id}',       [PaymentController::class, 'pays'] )->name('payment.pays');
         Route::get('/print/{id}',       [PaymentController::class, 'print'] )->name('payment.print');
+        Route::get('/sync',             [PaymentController::class, 'sync'] )->name('payment.sync');
+        Route::get('/get/{id}',         [PaymentController::class, 'get'] )->name('payment.get');
     });
 
     Route::prefix('master-bill')->group(function () {
