@@ -67,49 +67,52 @@
         {{-- <style>@page { size: A5 landscape;margin: 0;
         }</style> --}}
     </head>
-    <body class="p-4">
+    <body class="p-4 mt-2">
         <div>
-            <div class="row ms-2 mt-1">
-                <div class="col-2 mt-1">
+            <div class="row ms-2">
+                <div class="col-2 pt-3">
                     <img src="{{ asset('img/logo-bk.png') }}" style="height: 60px;">
                 </div>
                 <div class="col-10">
                     <strong>PERUSAHAAN AIR MINUM<br>TIRTA KOTA ALAM CAGAK LESTARI</strong><br>Jl. Raya Ciseuti Ds.Jalancagak Kec.Jalancagak
                 </div>
             </div>
-            <div>
-                &nbsp&nbsp&nbsp&nbsp&nbspTanggal Cetak : {{ Carbon\Carbon::now()->format('d-M-Y H:i') }}
-            </div>
         </div>
 
-        <br>
+        <hr>
         <div class="text-center align-middle">
             <strong>BUKTI PEMBAYARAN</strong>
         </div>
         <div class="row ms-2 me-2">
             <div class="col-8">
                 <div class="row">
-                    <div class="col-4">
+                    <div class="col-2">
                         Nama
                     </div>
-                    <div class="col-8">
+                    <div class="col-10">
                         {{ $data->customer->name }}
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-4">
-                        Alamat
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4">
+                                Alamat
+                            </div>
+                            <div class="col-8">
+                                {{ $data->customer->house_no }}
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-8">
-                        {{ $data->customer->house_no }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-4">
-                        ID Pelanggan
-                    </div>
-                    <div class="col-8">
-                        {{ $data->customer->id }}
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-6">
+                                ID Pelanggan
+                            </div>
+                            <div class="col-6">
+                                {{ $data->customer->billing_number }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -210,7 +213,7 @@
             </table>
         </div>
         <div class="row ms-2 me-2">
-            <div class="col-6">
+            <div class="col-6" style="font-size:10px;">
                 <ul>
                     <li>
                         Membayar Rekening Air Tepat waktu
@@ -222,7 +225,11 @@
                         Batas pembayaran sampai Tgl 20
                     </li>
                 </ul>
-                PT.ROSADI ABADI JAYA
+
+                <div>
+                    PT.ROSADI ABADI JAYA<br>
+                    Tanggal Cetak : {{ Carbon\Carbon::now()->format('d-M-Y H:i') }}
+                </div>
             </div>
             <div class="col-6 text-center">
                 <br>
