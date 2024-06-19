@@ -351,7 +351,7 @@
                     var total = response.data.data.total;
                     var paid = response.data.data.paid;
                     var diff = total-paid;
-                    inner += '<input class="form-control" name="token" id="token" value="'+response.data.token_+'" type="text" readonly>';
+                    inner += '<input class="form-control" name="token" id="token" value="'+response.data.token_+'" type="hidden" readonly>';
                     inner += '<p><strong>Total          : </strong><span>'+formatter.format(total)+'</span></p>';
                     inner += '<p><strong>Sudah DIbayar  : </strong><span>'+formatter.format(paid)+'</span></p>';
                     inner += '<p><strong>Kurang         : </strong><span>'+formatter.format(diff)+'</span></p>';
