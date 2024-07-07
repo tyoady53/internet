@@ -29,6 +29,7 @@ use App\Http\Controllers\CustomerBillingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MasterBillingController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SetupProgramController;
 use App\Http\Controllers\UserController;
@@ -121,5 +122,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/store',           [RoleController::class, 'store'])->name('role.store');
         Route::post('/update/{slug}',   [RoleController::class, 'update'])->name('role.update');
         Route::get('/show',             [RoleController::class, 'show'])->name('role.show');
+    });
+
+    Route::prefix('permissions')->group(function () {
+        Route::get('/index',            [PermissionController::class, 'index'])->name('permission.index');
+        Route::get('/create',           [PermissionController::class, 'create'])->name('permission.create');
+        Route::get('/edit/{slug}',      [PermissionController::class, 'edit'])->name('permission.edit');
+        Route::post('/store',           [PermissionController::class, 'store'])->name('permission.store');
+        Route::post('/update/{slug}',   [PermissionController::class, 'update'])->name('permission.update');
+        Route::get('/show',             [PermissionController::class, 'show'])->name('permission.show');
     });
 });

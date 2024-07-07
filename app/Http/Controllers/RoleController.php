@@ -50,7 +50,7 @@ class RoleController extends Controller
             'guard_name'=> 'web'
         ]);
 
-        return redirect('role/index');
+        return redirect('role/index')->with('success','created');
     }
 
     /**
