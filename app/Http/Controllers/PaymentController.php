@@ -247,13 +247,30 @@ class PaymentController extends Controller
 
     public function pays($unique_id, Request $request)
     {
+        if(!$request->amount) {
+            return response()->json([
+                'status'    => 200,
+                'message'   => 'Hanya Print',
+            ]);
+        }
         $data = Payment::where('encrypted_id',$unique_id)->first();
+        if((int)$data->paid + (int)$request->amount > (int)$data->total){
+            $paid = (int)$data->total;
+            if((int)$data->paid > 0){
+                $amount = (int)$data->total - (int)$data->paid;
+            } else {
+                $amount = (int)$data->total;
+            }
+        } else {
+            $paid = (int)$data->paid + (int)$request->amount;
+            $amount = (int)$request->amount;
+        }
         $data->update([
-            'paid'  => (int)$data->paid + (int)$request->amount
+            'paid'  => $paid
         ]);
         $insert = PaymentPaidDetail::create([
             'payment_id'    => $data->id,
-            'payment_amount'=> $request->amount
+            'payment_amount'=> $amount
         ]);
         if($insert){
             return response()->json([

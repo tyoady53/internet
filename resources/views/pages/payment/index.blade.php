@@ -372,7 +372,7 @@
                         inner += '</ul>';
                     }
 
-                    inner +='Jumlah Dibayar<input class="form-control" name="pay_amount" id="pay_amount" type="number">';
+                    inner +='Jumlah Dibayar<input class="form-control" name="pay_amount" id="pay_amount" type="number" '+(paid == total ? 'readonly' : '')+'>';
                     inner +='<div class="modal-footer"><button type="submit"class="btn btn-success btn-sm me-2" data-bs-dismiss="modal" onclick="payment()"><i class="fa fa-print me-1"></i> Print</button></div>';
                     inner +='</div>';
                     // inner +='</form>';
@@ -390,6 +390,9 @@
             var encrypt = document.getElementById("payment_encrypted").value;
             var token = document.getElementById("token").value;
             // alert(_token);
+            if(!amount) {
+                amount = null;
+            }
             axios({
                 method: 'post',
                 url: '/payment/pays/'+encrypt,
