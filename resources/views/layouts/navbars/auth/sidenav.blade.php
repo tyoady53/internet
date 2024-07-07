@@ -35,7 +35,7 @@
                     <span class="nav-link-text ms-1">Pelanggan</span>
                 </a>
             </li>
-            {{-- @if(auth()->user()->hasPermissionTo('billing')) --}}
+            @if(auth()->user()->hasPermissionTo('billing'))
             <li class="nav-item">
                 <a class="nav-link {{ str_contains(request()->url(), 'billing') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'billing/index']) }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -68,8 +68,8 @@
                     <span class="nav-link-text ms-1">Billing</span>
                 </a>
             </li>
-            {{-- @endif
-            @if(auth()->user()->hasPermissionTo('payment')) --}}
+            @endif
+            @if(auth()->user()->hasPermissionTo('payment'))
             <li class="nav-item">
                 <a class="nav-link {{ str_contains(request()->url(), 'payment') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'payment/index']) }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -80,8 +80,8 @@
                     <span class="nav-link-text ms-1">Pembayaran</span>
                 </a>
             </li>
-            {{-- @endif
-            @if(auth()->user()->hasPermissionTo('report')) --}}
+            @endif
+            @if(auth()->user()->hasPermissionTo('report'))
             <li class="nav-item">
                 <a class="nav-link {{ str_contains(request()->url(), 'report') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'report/index']) }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -92,14 +92,14 @@
                     <span class="nav-link-text ms-1">Laporan</span>
                 </a>
             </li>
-            {{-- @endif --}}
+            @endif
             @if(str_contains(auth()->user()->getRoleNames()[0],'admin'))
             <li class="nav-item mt-3 d-flex align-items-center">
                 <div class="ps-4">
                 </div>
                 <h6 class="ms-2 text-uppercase text-xs font-weight-bolder opacity-6 mb-0">User Management</h6>
             </li>
-            {{-- @if(auth()->user()->hasPermissionTo('user')) --}}
+            @if(auth()->user()->hasPermissionTo('user'))
             <li class="nav-item">
                 <a class="nav-link {{ str_contains(request()->url(), 'user') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'user/index']) }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -110,7 +110,7 @@
                     <span class="nav-link-text ms-1">Users</span>
                 </a>
             </li>
-            {{-- @endif --}}
+            @endif
             <li class="nav-item">
                 <a class="nav-link {{ str_contains(request()->url(), 'master-bill') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'master-bill/index']) }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
