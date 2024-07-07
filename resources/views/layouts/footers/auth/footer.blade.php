@@ -1,3 +1,37 @@
+<div class="modal fade" id="modal_change_pass" tabindex="-1" aria-labelledby="UserDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="UserDetailsModalLabel">Ganti Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="p-2">
+                <form role="form" method="post" action="{{ route('user.change_password') }}">
+                    @csrf
+                    <div>
+                        <label class="fw-bold">Password Baru</label>
+                        <input class="form-control" value="" name="password" type="text" placeholder="Password Baru">
+                    </div>
+                    <hr>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button class="btn btn-success shadow-sm rounded-sm" type="submit">Update</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {{-- <form  method="get" action="{{ route('billing.store',$unique_id) }}">
+                <div class="modal-body">
+                    <div id="payment_encrypted"></div>
+                    <div id="content"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form> --}}
+        </div>
+    </div>
+</div>
 <footer class="footer pt-3  ">
     <div class="container-fluid">
         <div class="row align-items-center justify-content-lg-between">

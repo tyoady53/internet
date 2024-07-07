@@ -93,6 +93,20 @@
                 </a>
             </li>
             @endif
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modal_change_pass">
+                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fa fa-pencil-alt text-dark text-sm opacity-10 me-1"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Ganti Password</span>
+                </a>
+                {{-- <a class="nav-link {{ str_contains(request()->url(), 'change_password') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'user/change_password']) }}">
+                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fa fa-pencil-alt text-dark text-sm opacity-10 me-1"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Ganti Password</span>
+                </a> --}}
+            </li>
             @if(auth()->user()->hasPermissionTo('user'))
             <li class="nav-item mt-3 d-flex align-items-center">
                 <div class="ps-4">

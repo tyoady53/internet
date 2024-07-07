@@ -112,4 +112,28 @@ class UserController extends Controller
     {
         //
     }
+
+    public function change_password(Request $request)
+    {
+        $user = User::where('id',auth()->user()->id)->first();
+        $update = $user->update([
+            'password'    => $request->password,
+        ]);
+        // $user->syncRoles($request->roles);
+
+        // return redirect('permissions/index')->with('success','created');
+        return redirect('dashboard')->with('success','updated');
+    }
+
+    public function reset_password(Request $request,$id)
+    {
+        $user = User::where('encrypted_id',$id)->first();
+        $update = $user->update([
+            'password'    => 'secret',
+        ]);
+        // $user->syncRoles($request->roles);
+
+        // return redirect('permissions/index')->with('success','created');
+        return redirect('user/index')->with('success','updated');
+    }
 }

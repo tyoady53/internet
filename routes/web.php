@@ -113,6 +113,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/create',           [UserController::class, 'create'])->name('user.create');
         Route::post('/update/{slug}',   [UserController::class, 'update'])->name('user.update');
         Route::post('/store',           [UserController::class, 'store'])->name('user.store');
+        Route::post('/change_password', [UserController::class, 'change_password'])->name('user.change_password');
+        Route::get('/reset_pass/{id}',  [UserController::class, 'reset_password'])->name('user.reset_password');
     });
 
     Route::prefix('role')->group(function () {
