@@ -17,7 +17,7 @@
                         <div class="col-xl-6 col-lg-6 col-md-6 d-flex flex-column mx-lg-0 mx-auto">
                             <div class="card card-primary">
                                 <div class="card-header pb-0 text-center">
-                                    <h2>TIRTA KOTA ALAM CAGAK LESTARI</h2>
+                                    Login Page
                                     <h4 class="font-weight-bolder">Sign In</h4>
                                     {{-- <p class="mb-0">Enter your email and password to sign in</p> --}}
                                 </div>
@@ -27,7 +27,7 @@
                                         @method('post')
                                         {{-- <div class="flex flex-col mb-3"> --}}
                                         <div class="form-floating mt-3 mb-3">
-                                            <input type="text" name="email" id="email" class="form-control" value="{{ old('email') ?? 'kasir@test.com' }}">
+                                            <input type="text" name="email" id="email" class="form-control" value="{{ old('email') ?? '' }}">
                                             <label for="email">User Name</label>
                                             @error('email') <p class="text-danger text-xs pt-1"> {{$message}} </p>@enderror
                                         </div>

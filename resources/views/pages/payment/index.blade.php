@@ -373,7 +373,7 @@
                     }
 
                     inner +='Jumlah Dibayar<input class="form-control" name="pay_amount" id="pay_amount" type="number" '+(paid == total ? 'readonly' : '')+'>';
-                    inner +='<div class="modal-footer"><button type="submit"class="btn btn-success btn-sm me-2" data-bs-dismiss="modal" onclick="payment()"><i class="fa fa-print me-1"></i> Print</button></div>';
+                    inner +='<div class="modal-footer"><button type="submit" class="btn btn-success btn-sm me-2" data-bs-dismiss="modal" onclick="payment()"><i class="fa fa-print me-1"></i> Print</button></div>';
                     inner +='</div>';
                     // inner +='</form>';
                     document.getElementById("form_content").innerHTML = inner;
@@ -416,6 +416,9 @@
 
         function print(encrypt){
             var base_url = window.location.origin;
+            if(base_url.includes('demo')){
+                base_url = base_url + 'public/';
+            }
             window.open(base_url+'/payment/print/'+encrypt, 'new', 'popup');
         }
 

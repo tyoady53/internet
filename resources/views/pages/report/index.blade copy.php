@@ -8,57 +8,93 @@
                 <form>
                     <div class="input-group mb-3">
                         {{-- <a href="/public/customer/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a> --}}
-                        {{-- <input type="text" class="form-control input-group-text mb-3" placeholder="search by user name . . .">
-
-                        <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> SEARCH</button> --}}
+                        <form role="form" method="get" action="{{ route('report.index') }}">
+                            {{-- @csrf --}}
+                            <select class="form-control input-group-text mb-3" name="periode">
+                            @foreach ($filters as $filter)
+                                <option value="{{ $filter->key }}" {{ request('periode') == $filter->key ? 'selected' : '' }}>{{ $filter->value }}</option>
+                            @endforeach
+                            </select>
+                            <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> Filter</button>
+                        </form>
                     </div>
                 </form>
                 <div class="table-responsive">
+                <h5>TAGIHAN LUNAS</h5>
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
                             <th scope="col" class="text-center"> Nama </th>
-                            <th scope="col" class="text-center"> Alamat </th>
                             <th scope="col" class="text-center"> No. Rumah </th>
                             <th scope="col" class="text-center"> Water Meter </th>
-                            <th scope="col" class="text-center"> Status </th>
                             <th scope="col" class="text-center"> Tanggal Billing Terakhir </th>
                             <th scope="col" class="text-center"> Pemakaian Terakhir </th>
-                            <th scope="col" style="width:10%" class="text-center">Aksi</th>
+                            <th scope="col" class="text-center"> Tanggal Bayar </th>
+                            <th scope="col" class="text-center"> No. Billing </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($user as $u)
+                        @foreach ($paid as $u)
                         <tr>
-                            <td>{{ $u->name }}</td>
-                            <td>{{ $u->address }}</td>
-                            <td>{{ $u->house_no }}</td>
-                            <td>{{ $u->water_meter_no }}</td>
+                            <td>{{ $u->customer->name }}</td>
+                            <td class="text-center">{{ $u->customer->house_no }}</td>
+                            <td class="text-center">{{ $u->customer->water_meter_no }}</td>
                             <td class="text-center">
-                                @if($u->status == '1')
-                                    Aktif
-                                @else
-                                    Tidak Aktif
-                                @endif
-                            </td>
-                            <td>
-                                @if(count($u->billings))
-                                    {{ $u->billings[0]->billing_date }}
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>
-                                @if(count($u->billings))
-                                    {{ $u->billings[0]->usage }} m<sup>3</sup>
+                                @if($u->billing_date)
+                                    {{ $u->billing_date }}
                                 @else
                                     -
                                 @endif
                             </td>
                             <td class="text-center">
-                                <a href="{{ './create/'.$u->encrypted_id }}" class="btn btn-primary btn-sm me-2"><i class="fa fa-plus-circle me-2"></i> Buat Billing</a>
-                                {{-- <a href="{{ './pay/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Pembayaran</a> --}}
+                                @if($u->usage)
+                                    {{ $u->usage }} m<sup>3</sup>
+                                @else
+                                    -
+                                @endif
                             </td>
+                            <td class="text-center">{{ \Carbon\Carbon::parse($u->pay_date)->format('d M Y') }}</td>
+                            <td class="text-center">{{ $u->billing_number }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <HR>
+                <h5>TAGIHAN TERTUNGGAK</h5>
+                <table class="table table-striped table-bordered table-hover" id="example1">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-center"> Nama </th>
+                            <th scope="col" class="text-center"> No. Rumah </th>
+                            <th scope="col" class="text-center"> Water Meter </th>
+                            <th scope="col" class="text-center"> Tanggal Billing Terakhir </th>
+                            <th scope="col" class="text-center"> Pemakaian Terakhir </th>
+                            <th scope="col" class="text-center"> Tanggal Input </th>
+                            <th scope="col" class="text-center"> No. Billing </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($unpaid as $u)
+                        <tr>
+                            <td>{{ $u->customer->name }}</td>
+                            <td class="text-center">{{ $u->customer->house_no }}</td>
+                            <td class="text-center">{{ $u->customer->water_meter_no }}</td>
+                            <td class="text-center">
+                                @if($u->billing_date)
+                                    {{ $u->billing_date }}
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if($u->usage)
+                                    {{ $u->usage }} m<sup>3</sup>
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td class="text-center">{{ $u->created_at->format('d M Y') }}</td>
+                            <td class="text-center">{{ $u->billing_number }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -173,8 +209,10 @@
     <script>
         $(document).ready(function($) {
             new DataTable('#example', {
-                pageLength: 100,
-                // order: [[4, 'asc'],[2, 'asc']]
+                order: [[4, 'asc'],[2, 'asc']]
+            });
+            new DataTable('#example1', {
+                order: [[4, 'asc'],[2, 'asc']]
             });
         })
     </script>

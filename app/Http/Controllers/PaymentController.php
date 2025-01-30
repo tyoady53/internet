@@ -328,4 +328,17 @@ class PaymentController extends Controller
             'text'  => 'Sync Gagal'
         ]);
     }
+
+    public function get_data_omzet($date){
+        $data = Payment::with('customer','detail.billing','pays')->whereHas('pays', function ($query) use ($date) {
+            $query->where('created_at','LIKE','%'.$date.'%');
+        })->get();
+
+        return response()->json([
+            'status'  => 200,
+            'message' => 'data found',
+            'data'  => $data
+        ]);
+        // dd($data);
+    }
 }

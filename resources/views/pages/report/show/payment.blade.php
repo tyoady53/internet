@@ -1,69 +1,59 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-    @include('layouts.navbars.auth.topnav', ['title' => 'Billing'])
-    <div class="card shadow-lg mx-4 mt-8" id="user_info">
+    @include('layouts.navbars.auth.topnav', ['title' => 'Laporan Pembayaran'])
+    <div class="card mx-4 mt-8" id="user_info">
         <div class="card-body p-3">
             <div class="row gx-4">
-                <form>
+                <div>
                     <div class="input-group mb-3">
-                        {{-- <a href="/public/customer/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a> --}}
-                        {{-- <input type="text" class="form-control input-group-text mb-3" placeholder="search by user name . . .">
-
-                        <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> SEARCH</button> --}}
+                        <select class="form-control input-group-text mb-3" name="periode" id="periode">
+                        @foreach ($filters as $filter)
+                            <option value="{{ $filter->key }}" {{ $last_month == $filter->key ? 'selected' : '' }}>{{ $filter->value }}</option>
+                        @endforeach
+                        </select>
+                        <button class="btn btn-primary input-group-text" type="submit" onclick="search_data()"> <i class="fa fa-search me-2"></i> Filter</button>
                     </div>
-                </form>
-                <div class="table-responsive">
+                </div>
+
                 <table class="table table-striped table-bordered table-hover" id="example">
-                    <thead>
+                    {{-- <thead>
                         <tr>
                             <th scope="col" class="text-center"> Nama </th>
-                            <th scope="col" class="text-center"> Alamat </th>
                             <th scope="col" class="text-center"> No. Rumah </th>
                             <th scope="col" class="text-center"> Water Meter </th>
-                            <th scope="col" class="text-center"> Status </th>
                             <th scope="col" class="text-center"> Tanggal Billing Terakhir </th>
                             <th scope="col" class="text-center"> Pemakaian Terakhir </th>
-                            <th scope="col" style="width:10%" class="text-center">Aksi</th>
+                            <th scope="col" class="text-center"> Tanggal Bayar </th>
+                            <th scope="col" class="text-center"> No. Billing </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($user as $u)
+                        @foreach ($paid as $u)
                         <tr>
-                            <td>{{ $u->name }}</td>
-                            <td>{{ $u->address }}</td>
-                            <td>{{ $u->house_no }}</td>
-                            <td>{{ $u->water_meter_no }}</td>
+                            <td>{{ $u->customer->name }}</td>
+                            <td class="text-center">{{ $u->customer->house_no }}</td>
+                            <td class="text-center">{{ $u->customer->water_meter_no }}</td>
                             <td class="text-center">
-                                @if($u->status == '1')
-                                    Aktif
-                                @else
-                                    Tidak Aktif
-                                @endif
-                            </td>
-                            <td>
-                                @if(count($u->billings))
-                                    {{ $u->billings[0]->billing_date }}
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>
-                                @if(count($u->billings))
-                                    {{ $u->billings[0]->usage }} m<sup>3</sup>
+                                @if($u->billing_date)
+                                    {{ $u->billing_date }}
                                 @else
                                     -
                                 @endif
                             </td>
                             <td class="text-center">
-                                <a href="{{ './create/'.$u->encrypted_id }}" class="btn btn-primary btn-sm me-2"><i class="fa fa-plus-circle me-2"></i> Buat Billing</a>
-                                {{-- <a href="{{ './pay/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Pembayaran</a> --}}
+                                @if($u->usage)
+                                    {{ $u->usage }} m<sup>3</sup>
+                                @else
+                                    -
+                                @endif
                             </td>
+                            <td class="text-center">{{ \Carbon\Carbon::parse($u->pay_date)->format('d M Y') }}</td>
+                            <td class="text-center">{{ $u->billing_number }}</td>
                         </tr>
                         @endforeach
-                    </tbody>
+                    </tbody> --}}
                 </table>
-                </div>
             </div>
         </div>
     </div>
@@ -76,7 +66,16 @@
         </div>
         @include('layouts.footers.auth.footer')
     </div>
+    <script>
+        $(document).ready(function() {
+            search_data();
+        });
 
+        function search_data(){
+            var periode = document.getElementById("periode").value;
+            console.log(periode);
+        };
+    </script>
     <style>
         .fixed {
             position: fixed;
@@ -170,13 +169,4 @@
             }
         }
     </style>
-    <script>
-        $(document).ready(function($) {
-            new DataTable('#example', {
-                pageLength: 100,
-                // order: [[4, 'asc'],[2, 'asc']]
-            });
-        })
-    </script>
-
 @endsection

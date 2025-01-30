@@ -63,6 +63,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::prefix('report')->group(function () {
         Route::get('/index',        [HomeController::class, 'report'])->name('report.index');
+        Route::get('/{param}/show', [HomeController::class, 'show'])->name('report.show');
         Route::get('/print',        [HomeController::class, 'report_print'])->name('report.print');
     });
 
@@ -133,5 +134,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/store',           [PermissionController::class, 'store'])->name('permission.store');
         Route::post('/update/{slug}',   [PermissionController::class, 'update'])->name('permission.update');
         Route::get('/show',             [PermissionController::class, 'show'])->name('permission.show');
+    });
+
+    Route::prefix('chart')->group(function () {
+        Route::get('/stand_usage/{year}',   [HomeController::class, 'get_stand_usage'])->name('chart.stand_usage');
     });
 });
