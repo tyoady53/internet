@@ -184,7 +184,7 @@
 
             $("#fetch").click(function(){
                 var periode = document.getElementsByName('periode');
-                alert(periode[0]?.value);
+                alert("Akan Fetching data billing "+periode[0]?.value);
             });
         })
     </script>
