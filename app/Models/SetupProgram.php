@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class SetupProgram extends Model
 {
     use HasFactory;
-    // protected $table = 'setup_programs';
     protected $guarded = [
         'id',
     ];

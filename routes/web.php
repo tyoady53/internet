@@ -27,12 +27,14 @@ use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;
 use App\Http\Controllers\CustomerBillingController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\MasterBillingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SetupProgramController;
 use App\Http\Controllers\UserController;
+use App\Models\CustomerGroup;
 
 Route::get('/', function () {return redirect('/dashboard');})->middleware('auth');
 	Route::get('/register',         [RegisterController::class, 'create'])->middleware('guest')->name('register');
@@ -73,6 +75,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/create',           [CustomerController::class, 'create'])->name('customer.create');
         Route::post('/update/{slug}',   [CustomerController::class, 'update'])->name('customer.update');
         Route::post('/store',           [CustomerController::class, 'store'])->name('customer.store');
+        Route::post('/import_excel',    [CustomerController::class, 'import_excel'])->name('customer.import_excel');
     });
 
     Route::prefix('billing')->group(function () {
@@ -87,25 +90,20 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pay/kwitansi/{slug}/{date}',   [CustomerBillingController::class, 'kwitansi'])->name('billing.kwitansi');
     });
 
-    Route::prefix('payment')->group(function () {
-        Route::get('/index',            [PaymentController::class, 'index'] )->name('payment.index');
-        Route::get('/edit/{slug}',      [PaymentController::class, 'edit']  )->name('payment.edit');
-        Route::get('/create',           [PaymentController::class, 'create'])->name('payment.create');
-        Route::post('/update/{slug}',   [PaymentController::class, 'update'])->name('payment.update');
-        Route::post('/store',           [PaymentController::class, 'store'] )->name('payment.store');
-        Route::post('/payment/{id}',    [PaymentController::class, 'payment'] )->name('payment.payment');
-        Route::post('/pays/{id}',       [PaymentController::class, 'pays'] )->name('payment.pays');
-        Route::get('/print/{id}',       [PaymentController::class, 'print'] )->name('payment.print');
-        Route::get('/sync',             [PaymentController::class, 'sync'] )->name('payment.sync');
-        Route::get('/get/{id}',         [PaymentController::class, 'get'] )->name('payment.get');
-    });
-
     Route::prefix('master-bill')->group(function () {
         Route::get('/index',            [MasterBillingController::class, 'index'])->name('master-bill.index');
         Route::get('/edit/{slug}',      [MasterBillingController::class, 'edit'])->name('master-bill.edit');
         Route::get('/create',           [MasterBillingController::class, 'create'])->name('master-bill.create');
         Route::post('/update/{slug}',   [MasterBillingController::class, 'update'])->name('master-bill.update');
         Route::post('/store',           [MasterBillingController::class, 'store'])->name('master-bill.store');
+    });
+
+    Route::prefix('master-group')->group(function () {
+        Route::get('/index',            [CustomerGroupController::class, 'index'])->name('master-group.index');
+        Route::get('/edit/{slug}',      [CustomerGroupController::class, 'edit'])->name('master-group.edit');
+        Route::get('/create',           [CustomerGroupController::class, 'create'])->name('master-group.create');
+        Route::post('/update/{slug}',   [CustomerGroupController::class, 'update'])->name('master-group.update');
+        Route::post('/store',           [CustomerGroupController::class, 'store'])->name('master-group.store');
     });
 
     Route::prefix('user')->group(function () {

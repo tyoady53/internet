@@ -7,28 +7,34 @@
             <div class="row gx-4">
                 <form>
                     <div class="input-group mb-3">
-                        {{-- <a href="/public/customer/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a> --}}
-                        {{-- <input type="text" class="form-control input-group-text mb-3" placeholder="search by user name . . .">
-
-                        <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> SEARCH</button> --}}
+                        <div class="input-group mb-3">
+                            <form role="form" method="get" action="{{ route('report.index') }}">
+                                <button class="btn btn-primary input-group-text" type="button" id="fetch"> Fetch <i class="fa fa-recycle ms-2"></i></button>
+                                <select class="form-control input-group-text mb-3" name="periode">
+                                @foreach ($filters as $filter)
+                                    <option value="{{ $filter->key }}" {{ request('periode') == $filter->key ? 'selected' : '' }}>{{ $filter->value }}</option>
+                                @endforeach
+                                </select>
+                                <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> Filter</button>
+                            </form>
+                        </div>
                     </div>
                 </form>
                 <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
+                            <th scope="col" class="text-center" style="width:5%"> No </th>
                             <th scope="col" class="text-center"> Nama </th>
                             <th scope="col" class="text-center"> Alamat </th>
-                            <th scope="col" class="text-center"> No. Rumah </th>
-                            <th scope="col" class="text-center"> Water Meter </th>
-                            <th scope="col" class="text-center"> Status </th>
-                            <th scope="col" class="text-center"> Tanggal Billing Terakhir </th>
-                            <th scope="col" class="text-center"> Pemakaian Terakhir </th>
+                            <th scope="col" class="text-center"> Paket </th>
+                            <th scope="col" class="text-center"> Status Pembayaran </th>
+                            <th scope="col" class="text-center"> Tanggal Dibayar </th>
                             <th scope="col" style="width:10%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($user as $u)
+                        {{-- @foreach ($user as $u)
                         <tr>
                             <td>{{ $u->name }}</td>
                             <td>{{ $u->address }}</td>
@@ -56,11 +62,10 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <a href="{{ './create/'.$u->encrypted_id }}" class="btn btn-primary btn-sm me-2"><i class="fa fa-plus-circle me-2"></i> Buat Billing</a>
-                                {{-- <a href="{{ './pay/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> Pembayaran</a> --}}
+                                <a href="{{ './create/'.$u->encrypted_id }}" class="btn btn-primary btn-sm me-2"><i class="fa fa-plus-circle me-2"></i> Buat Billing</a>\
                             </td>
                         </tr>
-                        @endforeach
+                        @endforeach --}}
                     </tbody>
                 </table>
                 </div>
@@ -175,6 +180,11 @@
             new DataTable('#example', {
                 pageLength: 100,
                 // order: [[4, 'asc'],[2, 'asc']]
+            });
+
+            $("#fetch").click(function(){
+                var periode = document.getElementsByName('periode');
+                alert(periode[0]?.value);
             });
         })
     </script>

@@ -4,8 +4,9 @@
         <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
             aria-hidden="true" id="iconSidenav"></i>
         <a class="navbar-brand m-0" href="{{ route('home') }}">
-            <img src="{{ asset('img/logo-bk.png') }}" class="navbar-brand-img h-150">
-            <span class="ms-1 font-weight-bold">TIRTA KOTA<br>ALAM CAGAK LESTARI</span>
+            <h4>DASHBOARD</h4>
+            {{-- <img src="{{ asset('img/logo-bk.png') }}" class="navbar-brand-img h-150"> --}}
+            {{-- <span class="ms-1 font-weight-bold">TIRTA KOTA<br>ALAM CAGAK LESTARI</span> --}}
         </a>
     </div>
     <hr class="horizontal dark mt-0">
@@ -35,7 +36,8 @@
                     <span class="nav-link-text ms-1">Pelanggan</span>
                 </a>
             </li>
-            @if(auth()->user()->hasPermissionTo('billing'))
+            {{-- {{ dd(auth()->user()->hasPermissionTo('billing')) }} --}}
+            @if(auth()->user()->hasPermissionTo('billing.index'))
             <li class="nav-item">
                 <a class="nav-link {{ str_contains(request()->url(), 'billing') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'billing/index']) }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -69,7 +71,7 @@
                 </a>
             </li>
             @endif
-            @if(auth()->user()->hasPermissionTo('payment'))
+            @if(auth()->user()->hasPermissionTo('payment.index'))
             <li class="nav-item">
                 <a class="nav-link {{ str_contains(request()->url(), 'payment') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'payment/index']) }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -107,7 +109,7 @@
                     <span class="nav-link-text ms-1">Ganti Password</span>
                 </a> --}}
             </li>
-            @if(auth()->user()->hasPermissionTo('user'))
+            @if(auth()->user()->hasPermissionTo('user.index'))
             <li class="nav-item mt-3 d-flex align-items-center">
                 <div class="ps-4">
                 </div>
@@ -124,7 +126,7 @@
                 </a>
             </li>
             @endif
-            @if(str_contains(auth()->user()->id,1))
+            @if(auth()->user()->hasPermissionTo('master-data.index'))
             <li class="nav-item">
                 <a class="nav-link {{ str_contains(request()->url(), 'master-bill') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'master-bill/index']) }}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -135,6 +137,26 @@
                     <span class="nav-link-text ms-1">Master Billings</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ str_contains(request()->url(), 'master-group') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'master-group/index']) }}">
+                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fa fa-users text-black text-sm opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Area Customer</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ str_contains(request()->url(), 'setup') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'setup/index']) }}">
+                    <div
+                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fa fa-cog text-black text-sm opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Setup</span>
+                </a>
+            </li>
+            @endif
+            @if(str_contains(auth()->user()->id,1))
+
             <li class="nav-item">
                 <a class="nav-link {{ str_contains(request()->url(), 'role') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'role/index']) }}">
                     <div
@@ -151,20 +173,6 @@
                         <i class="fa fa-lock text-danger text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Permissions</span>
-                </a>
-            </li>
-            {{-- <li class="nav-item mt-3 d-flex align-items-center">
-                <div class="ps-4">
-                </div>
-                <h6 class="ms-2 text-uppercase text-xs font-weight-bolder opacity-6 mb-0">Setup</h6>
-            </li> --}}
-            <li class="nav-item">
-                <a class="nav-link {{ str_contains(request()->url(), 'setup') == true ? 'active' : '' }}" href="{{ route('page', ['page' => 'setup/index']) }}">
-                    <div
-                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa fa-cog text-danger text-sm opacity-10"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Setup</span>
                 </a>
             </li>
             @endif

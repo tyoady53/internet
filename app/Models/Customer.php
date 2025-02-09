@@ -12,8 +12,8 @@ class Customer extends Model
         'id',
     ];
 
-    public function billings()
+    public function package()
     {
-        return $this->hasMany(CustomerBilling::class, 'customer_id');
+        return $this->belongsTo(MasterBilling::class, 'billing_id');
     }
 }

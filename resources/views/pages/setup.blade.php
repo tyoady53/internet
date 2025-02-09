@@ -27,7 +27,7 @@
                     <hr>
                     <div class="mb-3">
                         <label class="fw-bold">Nama Kasir</label>
-                        <input class="form-control" value="{{ $setup->cashier_name }}" name="address" type="text" placeholder="Name">
+                        <input class="form-control" value="{{ $setup->cashier_name }}" name="cashier" type="text" placeholder="Name">
                     </div>
                     <hr>
                     <div class="row">
@@ -35,13 +35,13 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="fw-bold">Administration Fee</label>
+                                        <label class="fw-bold">Boaya Admin</label>
                                         <input class="form-control" value="{{ $setup->administration_fee }}" name="fee" type="number" placeholder="Administration Fee">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="fw-bold">Fines</label>
+                                        <label class="fw-bold">Denda</label>
                                         <input class="form-control" value="{{ $setup->fine_fee }}" name="fines" type="number" placeholder="Denda">
                                     </div>
                                 </div>

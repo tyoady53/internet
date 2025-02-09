@@ -7,24 +7,27 @@
             <div class="row gx-4">
                 <form>
                     <div class="input-group mb-3">
-                        <a href="/role/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a>
+                        <a type="button" data-bs-toggle="modal" data-bs-target="#modal_add" class="btn btn-primary me-2"><i class="fa fa-plus-circle me-2"></i> NEW</a>
+                        {{-- <a href="/role/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a> --}}
                     </div>
                 </form>
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
-                            <th scope="col" class="text-center">Minimal Usage</th>
-                            <th scope="col" class="text-center">Maximal Usage</th>
-                            <th scope="col" class="text-center">Price</th>
-                            <th scope="col" style="width:20%" class="text-center">Actions</th>
+                            <th scope="col" class="text-center">No</th>
+                            <th scope="col" class="text-center">Besaran Paket</th>
+                            <th scope="col" class="text-center">Satuan</th>
+                            <th scope="col" class="text-center">Harga</th>
+                            <th scope="col" style="width:20%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data as $u)
+                        @foreach ($data as $idx=>$u)
                         <tr>
-                            <td>{{ $u->minimal }}</td>
-                            <td>{{ $u->maximal }}</td>
-                            <td>{{ $u->price }}</td>
+                            <td>{{ $idx + 1 }}</td>
+                            <td>{{ $u->package }}</td>
+                            <td>{{ $u->unit }}</td>
+                            <td class="text-end">{{ number_format($u->price) }}</td>
                             <td class="text-center">
                                 <a href="{{ './edit/'.$u->id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> EDIT</a>
                             </td>
@@ -32,6 +35,32 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal_add" tabindex="-1" aria-labelledby="UserDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="UserDetailsModalLabel">Tambah Permission</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="p-2">
+                    <form role="form" method="post" action="{{ route('permission.store') }}">
+                        @csrf
+                        <div>
+                            <label class="fw-bold">Permission Name</label>
+                            <input class="form-control" value="" name="permission_name" type="text" placeholder="Permission Name">
+                        </div>
+                        <hr>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button class="btn btn-success shadow-sm rounded-sm" type="submit">SAVE</button>
+                                <button class="btn btn-warning shadow-sm rouned-sm ms-3" type="reset">RESET</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

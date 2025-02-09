@@ -8,7 +8,7 @@
                 {{ auth()->user()->name }} ({{ auth()->user()->getRoleNames()[0] }})
             </h1>
         </div>
-        <div class="row mt-4">
+        {{-- <div class="row mt-4">
             <div class="col-xl-3 col-sm-6 mb-xl-0">
                 <div class="card">
                     <div class="card-body p-3">
@@ -96,7 +96,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
         <div class="row mt-4">
             <div class="col-lg-12 mb-lg-0 mb-4">
                 <div class="card z-index-2 h-100">
@@ -125,23 +125,47 @@
 
         new Chart(ctx1, {
             type: "bar",
+            // data: {
+            //     labels: ["Jan","Feb","Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            //     datasets: [{
+            //         label: "-",
+            //         borderColor: "#000",
+            //         data: arr_data,
+            //     }],
+            // },
             data: {
-                labels: ["Jan","Feb","Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                datasets: [{
-                    label: "-",
-                    borderColor: "#000",
-                    data: arr_data,
-                }],
+                labels: ['Oktober 2024','November 2024', 'Desember 2024', 'Januari 2025', 'Februari 2025'],
+                datasets: [
+                    {
+                        label: 'Sudah Bayar',
+                        backgroundColor: "rgba(54, 162, 235, 0.5)",
+                        borderColor: "rgba(54, 162, 235, 1)",
+                        borderWidth: 1,
+                        data: [75, 60, 60, 70, 75]
+                    },
+                    {
+                        label: 'Belum Bayar',
+                        backgroundColor: "rgba(255, 99, 132, 0.5)",
+                        borderColor: "rgba(255, 99, 132, 1)",
+                        borderWidth: 1,
+                        data: [0, 15, 15, 5, 0]
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false,
+                        display: true,
                     }
                 },
-            },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
         });
     </script>
 @endpush

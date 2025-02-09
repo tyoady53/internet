@@ -56,9 +56,19 @@ class SetupProgramController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, SetupProgram $setupProgram)
+    public function update(Request $request)
     {
-        //
+        // dd($request);
+        $user = SetupProgram::first();
+
+        $user->update([
+            'store_name' => $request->get('name'),
+            'address' => $request->get('address'),
+            'administration_fee' => $request->get('fee'),
+            'fine_fee' => $request->get('fines') ,
+            'cashier_name' => $request->get('cashier'),
+        ]);
+        return redirect('setup/index')->with('success','updated');
     }
 
     /**

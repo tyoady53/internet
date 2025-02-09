@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\CustomerImport;
 use App\Models\Customer;
+use App\Models\CustomerGroup;
 use Carbon\Carbon;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
 {
@@ -13,9 +17,10 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $users = Customer::orderBy('status','DESC')->orderBy('house_no','ASC')->get();
+        $users = [];
+        $users = CustomerGroup::with('customers.package')->orderBy('group_name')->get()->toArray();
         return view('pages.customers.index',[
-            'user'      => $users,
+            'cust_groups'      => $users,
         ]);
     }
 
@@ -136,5 +141,30 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         //
+    }
+
+    public function import_excel(Request $request)
+    {
+        $this->validate($request, [
+			'file' => 'required|mimes:csv,xls,xlsx'
+		]);
+
+		// menangkap file excel
+		$file = $request->file('file');
+
+		// membuat nama file unik
+		$nama_file = rand().$file->getClientOriginalName();
+
+		// upload ke folder file_siswa di dalam folder public
+		$file->move('file_upload',$nama_file);
+
+		// import data
+		Excel::import(new CustomerImport, public_path('/file_upload/'.$nama_file));
+
+		// notifikasi dengan session
+		// Session::flash('sukses','Data Siswa Berhasil Diimport!');
+
+		// alihkan halaman kembali
+		return redirect('customer/index')->with('success','saved');
     }
 }

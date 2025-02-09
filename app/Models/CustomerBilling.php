@@ -11,13 +11,4 @@ class CustomerBilling extends Model
     protected $guarded = [
         'id',
     ];
-
-    public function consumption()
-    {
-        return $this->hasMany(CustomerConsumption::class, 'consumption_id');
-    }
-
-    public function customer(){
-        return $this->belongsTo(Customer::class,'customer_id');
-    }
 }
