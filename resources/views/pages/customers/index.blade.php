@@ -15,6 +15,7 @@
                         </div>
                         <div>
                             <div class="input-group mb-3">
+                                <a href="/customer/fetch" class="btn btn-primary input-group-text me-1"> <i class="fa fa-recycle me-2"></i> Fetch</a>
                                 <button type="button" class="btn btn-primary mr-5" data-bs-toggle="modal" data-bs-target="#importExcel">
                                     <i class="fa fa-upload me-2"></i>
                                     Import

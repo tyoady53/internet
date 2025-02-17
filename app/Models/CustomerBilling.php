@@ -9,6 +9,5 @@ class CustomerBilling extends Model
 {
     use HasFactory;
     protected $guarded = [
-        'id',
     ];
 }

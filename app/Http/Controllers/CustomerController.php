@@ -143,6 +143,40 @@ class CustomerController extends Controller
         //
     }
 
+    public function fetch() {
+        // $data = CustomerBilling::where('billing_date', $date)->pluck('customer_id')->toArray();
+        // $cut_date = substr($date,-5);
+        $customers = Customer::with('package')->orderBy('join_date')->orderBy('group_id')->get();
+        // dd($customers);
+        $last_data = 1;
+        $return = ''; $message = '';
+        // $insert = array();
+        $join_date = '2024-01-08';
+        foreach($customers as $customer) {
+            $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            $generated = substr(str_shuffle($characters), 0, 4);
+            if(Carbon::parse($customer->join_date)->format('ym') >  Carbon::parse($join_date)->format('ym')) {
+                // dd($join_date,$customer->join_date);
+                $join_date = $customer->join_date;
+                $last_data = 1;
+            }
+            $customer_number = Carbon::parse($join_date)->format('ym').str_pad($last_data, 4, '0', STR_PAD_LEFT).str_pad($customer->group_id, 4, '0', STR_PAD_LEFT).$generated;
+            $insert= [
+                'customer_number'   => $customer_number,
+            ];
+            $last_data += 1;
+            if($customer->customer_number == '' || $customer->customer_number == null){
+                $customer->update($insert);
+            }
+        }
+        // dd($insert);
+        return redirect('customer/index')->with('success','updated');
+        // return response()->json([
+        //     'status'    => 200,
+        //     'message'   => 'Fetch data success',
+        // ]);
+    }
+
     public function import_excel(Request $request)
     {
         $this->validate($request, [

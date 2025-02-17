@@ -9,13 +9,14 @@
                     <div class="input-group mb-3">
                         <div class="input-group mb-3">
                             <form role="form" method="get" action="{{ route('report.index') }}">
+                                {{-- <button class="btn btn-primary input-group-text" type="button" id="fetch" onclick="fetch()"> Fetch <i class="fa fa-recycle ms-2"></i></button> --}}
                                 <button class="btn btn-primary input-group-text" type="button" id="fetch"> Fetch <i class="fa fa-recycle ms-2"></i></button>
                                 <select class="form-control input-group-text mb-3" name="periode">
                                 @foreach ($filters as $filter)
                                     <option value="{{ $filter->key }}" {{ request('periode') == $filter->key ? 'selected' : '' }}>{{ $filter->value }}</option>
                                 @endforeach
                                 </select>
-                                <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> Filter</button>
+                                <button class="btn btn-primary input-group-text" type="button"  id="filter"> <i class="fa fa-search me-2"></i> Filter</button>
                             </form>
                         </div>
                     </div>
@@ -30,10 +31,13 @@
                             <th scope="col" class="text-center"> Paket </th>
                             <th scope="col" class="text-center"> Status Pembayaran </th>
                             <th scope="col" class="text-center"> Tanggal Dibayar </th>
-                            <th scope="col" style="width:10%" class="text-center">Aksi</th>
+                            {{-- <th scope="col" style="width:10%" class="text-center">Aksi</th> --}}
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="table_content">
+                        {{-- <div>
+
+                        </div> --}}
                         {{-- @foreach ($user as $u)
                         <tr>
                             <td>{{ $u->name }}</td>
@@ -181,12 +185,97 @@
                 pageLength: 100,
                 // order: [[4, 'asc'],[2, 'asc']]
             });
-
             $("#fetch").click(function(){
                 var periode = document.getElementsByName('periode');
-                alert("Akan Fetching data billing "+periode[0]?.value);
+                axios({
+                    method: 'get',
+                    url: '/billing/fetch/'+periode[0]?.value
+                    })
+                    .then(function (response) {
+                        if(response.data.status == 200) {
+                            Swal.fire({
+                                title: "Success!",
+                                text: response.data.message,
+                                icon: "success",
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                get_data(periode[0]?.value); // Call function correctly
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Fetch data gagal",
+                                icon: "error",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                        // alert(response.data.status);
+                    })
+                // alert("Akan Fetching data billing "+periode[0]?.value);
+            });
+
+            $("#filter").click(function(){
+                var periode = document.getElementsByName('periode');
+                get_data(periode[0]?.value);
             });
         })
+
+        function get_data(date) {
+            var inner = '';
+            axios({
+                method: 'get',
+                url: '/billing/get/'+date
+                })
+                .then(function (response) {
+                    if(response.data.status == 200) {
+                        // inner += '<tr class="form-control" name="token" id="token" value="'+response.data.token_+'" type="hidden" readonly>';
+                            for(var i =0; i < response.data.data.length; i++) {
+                                current_data = response.data.data[i];
+                                inner += '<tr>';
+                                inner += '<td colspan="6">';
+                                inner += current_data.group_name + ' ('+current_data.customers.length+')';
+                                inner += '</td>';
+                                inner += '</tr>';
+                                for(var j = 0; j< current_data.customers.length; j ++){
+                                    current_ = current_data.customers[j];
+                                    inner += '<tr>';
+                                    inner += '<td>';
+                                    inner += parseInt(j) + 1;
+                                    inner += '</td>';
+                                    inner += '<td>';
+                                    inner += current_.name;
+                                    inner += '</td>';
+                                    inner += '<td>';
+                                    inner += current_.address;
+                                    inner += '</td>';
+                                    inner += '<td>';
+                                    inner += current_.package.billing_name;
+                                    inner += '</td>';
+                                    inner += '<td>';
+                                    inner += current_.billing[0].pay_date ? "Sudah Dibayar" : "Belum Dibayar";
+                                    inner += '</td>';
+                                    inner += '<td>';
+                                    inner += current_.billing[0].pay_date ? current_.billing[0].pay_date : "";
+                                    inner += '</td>';
+                                    // inner += '<td>';
+                                    // inner += "Tombol Bayar";
+                                    // inner += '</td>';
+                                    inner += '</tr>';
+                                }
+                            }
+                        document.getElementById("table_content").innerHTML = inner;
+                    } else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: "Get data gagal",
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                })
+                console.log(inner)
+            // alert('get data here @'+date);
+        }
     </script>
 
 @endsection

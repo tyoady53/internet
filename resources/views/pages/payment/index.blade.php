@@ -9,9 +9,14 @@
                     <div class="input-group mb-3">
                         <div class="input-group mb-3">
                             <form role="form" method="get" action="{{ route('report.index') }}">
-                                <select class="form-control input-group-text mb-3" name="periode">
+                                <select class="form-control input-group-text mb-3 me-1" name="periode">
                                 @foreach ($filters as $filter)
                                     <option value="{{ $filter->key }}" {{ request('periode') == $filter->key ? 'selected' : '' }}>{{ $filter->value }}</option>
+                                @endforeach
+                                </select>
+                                <select class="form-control input-group-text mb-3 me-1" name="group">
+                                @foreach ($groups as $group)
+                                    <option value="{{ $group->id }}" {{ request('group') == $group->id ? 'selected' : '' }}>{{ $group->group_name }}</option>
                                 @endforeach
                                 </select>
                                 <button class="btn btn-primary input-group-text" type="submit"> <i class="fa fa-search me-2"></i> Filter</button>
@@ -19,184 +24,63 @@
                         </div>
                     </div>
                 </form>
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <p><h3 style="color:white">Pilih setidaknya 1 billing yang akan di bayar.</h3></p>
-                        {{-- <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul> --}}
+                <div class="accordion" id="accordionExample">
+                    @foreach ($datas as $idx=>$data)
+                    {{-- {{ dd($idx) }} --}}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading{{ str_replace(' ', '', $idx)  }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ str_replace(' ', '', $idx) }}" aria-expanded="false" aria-controls="collapse{{ str_replace(' ', '', $idx)  }}">
+                                {{ $idx }} ({{ count($datas[$idx]) }})
+                            </button>
+                        </h2>
+                        <div id="collapse{{ str_replace(' ', '', $idx)  }}" class="accordion-collapse collapse" aria-labelledby="heading{{ str_replace(' ', '', $idx)  }}" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered table-hover" id="example{{ str_replace(' ', '', $idx)  }}">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-center"> Nama </th>
+                                                <th scope="col" class="text-center"> paket </th>
+                                                <th scope="col" class="text-center"> Tanggal Billing </th>
+                                                <th scope="col" class="text-center"> No. Billing </th>
+                                                <th scope="col" class="text-center"> Total </th>
+                                                <th scope="col" class="text-center"> Tanggal Bayar </th>
+                                                <th scope="col" style="width:10%" class="text-center">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($data as $customer)
+                                            <tr>
+                                                <td>{{ $customer['name'] }}</td>
+                                                <td class="text-end">{{ $customer['paket'] }}</td>
+                                                <td class="text-center">{{ $customer['tanggal_billing'] }}</td>
+                                                <td>{{ $customer['billing_number'] }}</td>
+                                                <td class="text-end">{{ number_format($customer['total'], 0, ',', '.') }}</td>
+                                                <td>{{ $customer['tanggal_bayar'] }}</td>
+                                                <td class="text-center">
+                                                    @if($idx == 'Belum Bayar')
+                                                    <a type="button" data-bs-toggle="modal"
+                                                    data-billing-number="{{ $customer['billing_number'] }}"
+                                                    data-jumlah="{{ $customer['jumlah'] }}"
+                                                    data-discount="{{ $customer['diskon'] }}"
+                                                    data-total="{{ $customer['total'] }}"
+                                                    data-customer="{{ $customer['name'] }}"
+                                                    data-bs-target="#modal_bayar" class="btn btn-success btn-sm me-2">
+                                                    <i class="fa fa-money me-1"></i> Bayar</a>
+                                                    @else
+                                                    Print Ulang
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                @endif
-                @if (auth()->user()->getRoleNames()[0] == 'superadmin')
-                <div>
-                    <button onclick="sync()"><i class="fa fa-sync"></i>&nbsp Sync</button>
-                </div>
-                @endif
-                <div class="table-responsive">
-                    <h5>TAGIHAN BELUM DI BAYAR</h5>
-                <table class="table table-striped table-bordered table-hover" id="example">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="text-center"> Nama </th>
-                            <th scope="col" class="text-center"> No. Rumah </th>
-                            <th scope="col" class="text-center"> Tanggal Billing </th>
-                            <th scope="col" class="text-center"> Terlambat </th>
-                            <th scope="col" class="text-center"> Denda </th>
-                            {{-- <th scope="col" class="text-center"> Status </th> --}}
-                            <th scope="col" class="text-center"> Pemakaian Sebelumnya </th>
-                            <th scope="col" class="text-center"> Hasil Water Meter </th>
-                            <th scope="col" class="text-center"> Pemakaian </th>
-                            <th scope="col" class="text-center"> Total </th>
-                            <th scope="col" class="text-center"> Aksi </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($data as $u)
-                        {{-- {{ $u }} --}}
-                        <tr>
-                            <form action="{{ 'payment/'.$u->encrypted_id }}" method="POST">
-                                @csrf
-                                <td>{{ $u->name }}</td>
-                                <td>{{ $u->house_no }}</td>
-                                <td>
-                                    @foreach ($u->billings as $billing)
-                                        <input type="checkbox" name="billing_id[]" value="{{ $billing->id }}" checked>
-                                        {{ $billing->billing_date }}<br>
-                                    @endforeach
-                                </td>
-                                <td>
-                                    @foreach ($u->billings as $billing)
-                                        {{ $billing->late }} Bulan<br>
-                                    @endforeach
-                                </td>
-                                <td class="text-end">
-                                    @foreach ($u->billings as $billing)
-                                        {{ number_format(1  *$setup->fine_fee) }}<br>
-                                    @endforeach
-                                </td>
-                                {{-- <td class="text-center">
-                                    @if($u->pay_date == null)
-                                        Belum Dibayar
-                                    @else
-                                        Terbayar
-                                    @endif
-                                </td> --}}
-                                <td class="text-center">
-                                    @foreach ($u->billings as $billing)
-                                        {{ $billing->water_meter_count }} m<sup>3</sup> <br>
-                                    @endforeach
-
-                                </td>
-                                <td class="text-center">
-                                    @foreach ($u->billings as $billing)
-                                        {{ $billing->usage }} m<sup>3</sup><br>
-                                    @endforeach
-                                </td>
-                                <td class="text-center">
-                                    @foreach ($u->billings as $billing)
-                                        {{ $billing->usage - (int)$billing->water_meter_count }} m<sup>3</sup> <br>
-                                    @endforeach
-                                </td>
-                                <td class="text-end">
-                                    @foreach ($u->billings as $billing)
-                                        {{ number_format(($billing->price_total) + (1*$setup->fine_fee)) }}<br>
-                                    @endforeach
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-success btn-sm me-2" type="submit">
-                                        {{-- <i class="fa fa-money me-1"></i>  --}}
-                                        <i class="fa fa-solid fa-file-invoice-dollar"></i>
-                                        &nbsp Buat Kwitansi
-                                    </button>
-                                    {{-- @if($u->pay_date == null)
-                                        <a href="{{ 'payment/'.$u->encrypted_id }}" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1"></i> Bayar</a>
-                                    @else
-                                        <span class="badge bg-success shadow border-0 ms-2 mb-2">
-                                            Lunas
-                                        </span>
-                                    @endif --}}
-                                </td>
-                            </form>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                </div>
-                <hr>
-                {{-- {{ $paid }} --}}
-                <div class="table-responsive">
-                    <h5>TAGIHAN SUDAH DI BAYAR</h5>
-                    <table class="table table-striped table-bordered table-hover" id="example1">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="text-center"> Nama </th>
-                                <th scope="col" class="text-center"> No. Rumah </th>
-                                <th scope="col" class="text-center"> Tanggal Billing </th>
-                                <th scope="col" class="text-center"> Terlambat </th>
-                                <th scope="col" class="text-center"> Denda </th>
-                                <th scope="col" class="text-center"> Tanggal Bayar </th>
-                                <th scope="col" class="text-center"> Pemakaian Sebelumnya </th>
-                                <th scope="col" class="text-center"> Hasil Water Meter </th>
-                                <th scope="col" class="text-center"> Pemakaian </th>
-                                <th scope="col" class="text-center"> Total </th>
-                                <th scope="col" class="text-center"> Aksi </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($paid as $u)
-                            <tr>
-                                <td>{{ $u->customer->name }}</td>
-                                <td>{{ $u->customer->house_no }}</td>
-                                <td>
-                                    @foreach ($u->detail as $billing)
-                                        {{ $billing->billing->billing_date }}<br>
-                                    @endforeach
-                                </td>
-                                <td>
-                                    @foreach ($u->detail as $billing)
-                                        {{ $billing->late }} Bulan<br>
-                                    @endforeach
-                                </td>
-                                <td class="text-end">
-                                    @foreach ($u->detail as $billing)
-                                        {{ number_format($billing->billing->fines) }}<br>
-                                    @endforeach
-                                </td>
-                                <td class="text-center">
-                                    {{ $u->payment }}
-                                </td>
-                                <td class="text-center">
-                                    @foreach ($u->detail as $billing)
-                                        {{ $billing->billing->water_meter_count }} m<sup>3</sup> <br>
-                                    @endforeach
-
-                                </td>
-                                <td class="text-center">
-                                    @foreach ($u->detail as $billing)
-                                        {{ $billing->billing->usage }} m<sup>3</sup><br>
-                                    @endforeach
-                                </td>
-                                <td class="text-center">
-                                    @foreach ($u->detail as $billing)
-                                        {{ $billing->billing->usage - (int)$billing->billing->water_meter_count }} m<sup>3</sup> <br>
-                                    @endforeach
-                                </td>
-                                <td class="text-end">
-                                    @foreach ($u->detail as $billing)
-                                        {{ number_format(($billing->billing->price_total) + (1*$setup->fine_fee)) }}<br>
-                                    @endforeach
-                                </td>
-                                <td class="text-center">
-                                    <a type="button" data-bs-toggle="modal" data-target-id="{{ $u->encrypted_id }}" data-bs-target="#modal_bayar" class="btn btn-success btn-sm me-2"><i class="fa fa-money me-1" href="#"></i>&nbsp Bayar</a>
-                                    {{-- <a href="{{ 'print/'.$u->encrypted_id }}" onclick="window.open(this.href, 'new', 'popup'); return false;" class="btn btn-success btn-sm me-2"><i class="fa fa-print me-1"></i> Cetak</a> --}}
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                    @endforeach
+                </div><!-- accordion end -->
             </div>
         </div>
     </div>
@@ -205,24 +89,48 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="UserDetailsModalLabel">Pembayaran</h5>
+                    <h5 class="modal-title" id="UserDetailsModalLabel">Konfirmasi Pembayaran</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div id="form_content">
-
-                </div>
-                {{-- <form  method="get" action="{{ route('billing.store',$unique_id) }}">
                     <div class="modal-body">
-                        <div id="payment_encrypted"></div>
-                        <div id="content"></div>
+                        <table>
+                            <tr>
+                                <td><strong>Customer</strong></td>
+                                <td><strong>: </strong> <span id="customer"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Billing Number</strong></td>
+                                <td><strong>: </strong> <span id="modal_billing_number"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jumlah:</strong></td>
+                                <td><strong>: </strong> <span id="modal_jumlah"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Discount:</strong></td>
+                                <td><strong>: </strong> <span id="modal_discount"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Grand Total:</strong></td>
+                                <td><strong>: </strong> <span id="modal_total"></span></td>
+                            </tr>
+                        </table>
+                        {{-- <span id="modal_billing_number"></span></p>
+                         <span id="modal_jumlah"></span></p>
+                         <span id="modal_discount"></span></p>
+                        </p> --}}
+                        <div class="modal-footer">
+                            <a href="{{ './payment/' }}" class="btn btn-success" id="modal_bayar_button">
+                                <i class="fa fa-money me-1"></i> Bayar
+                            </a>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </form> --}}
+                </div>
             </div>
         </div>
     </div>
+
     <div id="alert">
         @include('components.alert')
     </div>
@@ -336,50 +244,32 @@
             });
 
             $("#modal_bayar").on("show.bs.modal", function (e) {
-                var id = $(e.relatedTarget).data('target-id');
-                var inner = '';
-                // inner += '<form  method="get" action="print/'+id+'">';
-                inner += '<div class="modal-body">';
-                inner += '<input class="form-control" name="payment_encrypted" id="payment_encrypted" value="'+id+'" type="hidden" readonly>';
-                // $('#pass_id').val(id);
-                axios({
-                method: 'get',
-                url: '/payment/get/'+id
-                })
-                .then(function (response) {
-                    const formatter = new Intl.NumberFormat('en');
-                    var total = response.data.data.total;
-                    var paid = response.data.data.paid;
-                    var diff = total-paid;
-                    inner += '<input class="form-control" name="token" id="token" value="'+response.data.token_+'" type="hidden" readonly>';
-                    inner += '<p><strong>Total          : </strong><span>'+formatter.format(total)+'</span></p>';
-                    inner += '<p><strong>Sudah DIbayar  : </strong><span>'+formatter.format(paid)+'</span></p>';
-                    inner += '<p><strong>Kurang         : </strong><span>'+formatter.format(diff)+'</span></p>';
-                    if(response.data.data.pays.length > 0){
-                        inner += '<p><strong>Detail Pembayaran</p><ul>';
-                            for(var i = 0;i < response.data.data.pays.length; i++){
-                                let objectDate = new Date(response.data.data.pays[i].created_at);
-                                let day = objectDate.getDate();
-                                console.log(day); // 23
+                var button = $(e.relatedTarget); // Button that triggered the modal
+                var billingNumber = button.data('billing-number'); // Extract the data-* attributes
+                var jumlah = button.data('jumlah');
+                var discount = button.data('discount');
+                var total = button.data('total');
+                var customer = button.data('customer');
 
-                                let month = objectDate.getMonth();
-                                console.log(month + 1); // 8
+                console.log(button);
+                // Set the values inside the modal
+                $('#modal_billing_number').text(billingNumber);
+                $('#modal_jumlah').text(formatNumber(jumlah));
+                $('#modal_discount').text(formatNumber(discount));
+                $('#modal_total').text(formatNumber(total));
+                $('#customer').text(customer);
 
-                                let year = objectDate.getFullYear();
-                                console.log(year); // 2022
-                                inner += '<li><p><strong>'+day+'-'+month+'-'+year+'</strong>:<span>'+formatter.format(response.data.data.pays[i].payment_amount)+'</span></p></li>';
-                            }
-                        inner += '</ul>';
-                    }
-
-                    inner +='Jumlah Dibayar<input class="form-control" name="pay_amount" id="pay_amount" type="number" '+(paid == total ? 'readonly' : '')+'>';
-                    inner +='<div class="modal-footer"><button type="submit" class="btn btn-success btn-sm me-2" data-bs-dismiss="modal" onclick="payment()"><i class="fa fa-print me-1"></i> Print</button></div>';
-                    inner +='</div>';
-                    // inner +='</form>';
-                    document.getElementById("form_content").innerHTML = inner;
-                });
+                // Optionally, set a default value for the input field
+                // $('#pay_amount').val(total - discount);
+                $('#modal_bayar_button').attr('href', './pay/' + billingNumber);
             });
         });
+
+        function formatNumber(number) {
+            const formatter = new Intl.NumberFormat('en');
+            var total = parseInt(number);
+            return formatter.format(total);
+        }
 
         function reload(){
             window.location.reload;

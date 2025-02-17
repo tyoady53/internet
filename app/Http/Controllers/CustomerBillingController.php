@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\CustomerBilling;
+use App\Models\CustomerGroup;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -50,7 +52,7 @@ class CustomerBillingController extends Controller
         }
         return view('pages.billings.index',[
             'user'      => $users,
-            'filters'   => $month_arr,
+            'filters'   => $month_arr->reverse(),
         ]);
     }
 
@@ -100,5 +102,44 @@ class CustomerBillingController extends Controller
     public function destroy(CustomerBilling $customerBilling)
     {
         //
+    }
+
+    public function fetch($date) {
+        $data = CustomerBilling::where('billing_date', $date)->pluck('customer_id')->toArray();
+        $cut_date = substr($date,-5);
+        $customers = Customer::with('package')->whereNotIn('id',$data)->get();
+        foreach($customers as $customer) {
+            $price = $customer->package->price;
+            $discount = (int)$customer->discount/100 * (int)$customer->package->price;
+            $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            $billing_number = $cut_date.'-'.str_pad($customer->id, 4, '0', STR_PAD_LEFT).'-'.substr(str_shuffle($characters), 0, 4);
+            $insert = [
+                'customer_id'   => $customer->id,
+                'billing_date'  => $date,
+                'package_name'  => $customer->package->billing_name,
+                'price'         => $price,
+                'quantity'      => 1,
+                'discount'      => $discount,
+                'total'         => $price - $discount,
+                'billing_number'=> $billing_number
+            ];
+            CustomerBilling::create($insert);
+        }
+        return response()->json([
+            'status'    => 200,
+            'message'   => 'Fetch data '.$date." success",
+        ]);
+        // dd($date);
+    }
+
+    public function get($date) {
+        $data = CustomerGroup::with(['customers.package','customers.billing' => function ($query) use ($date) {
+            $query->where('billing_date', $date);
+        }])->get();
+        return response()->json([
+            'status'    => 200,
+            'message'   => 'Fetch data '.$date." success",
+            'data'      => $data
+        ]);
     }
 }
