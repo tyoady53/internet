@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomerBilling;
 use App\Models\CustomerGroup;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -157,7 +158,15 @@ class PaymentConstroller extends Controller
     }
 
     public function pay($request) {
-        dd($request);
+        $transaction = CustomerBilling::where('billing_number',$request)->first();
+        $transaction->update([
+            'pay_date'  => Carbon::now()
+        ]);
+
+        return response()->json([
+            'status'    => 200,
+            'message'   => 'Insert Success',
+        ]);
     }
 
     public function reprint($request) {

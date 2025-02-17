@@ -121,9 +121,9 @@
                          <span id="modal_discount"></span></p>
                         </p> --}}
                         <div class="modal-footer">
-                            <a href="{{ './payment/' }}" class="btn btn-success" id="modal_bayar_button">
+                            <button type="button" onclick="payment()" class="btn btn-success" id="modal_bayar_button">
                                 <i class="fa fa-money me-1"></i> Bayar
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -235,6 +235,7 @@
         }
     </style>
     <script>
+        window.trx_id = '';
         $(document).ready(function() {
             new DataTable('#example', {
                 order: [1, 'asc']
@@ -244,6 +245,7 @@
             });
 
             $("#modal_bayar").on("show.bs.modal", function (e) {
+                window.trx_id = '';
                 var button = $(e.relatedTarget); // Button that triggered the modal
                 var billingNumber = button.data('billing-number'); // Extract the data-* attributes
                 var jumlah = button.data('jumlah');
@@ -261,7 +263,9 @@
 
                 // Optionally, set a default value for the input field
                 // $('#pay_amount').val(total - discount);
-                $('#modal_bayar_button').attr('href', './pay/' + billingNumber);
+                window.trx_id = billingNumber;
+                console.log("Global trx_id Set:", window.trx_id);
+                // $('#modal_bayar_button').attr('href', './pay/' + billingNumber);
             });
         });
 
@@ -276,19 +280,23 @@
         }
 
         function payment(){
-            var amount = document.getElementById("pay_amount").value;
-            var encrypt = document.getElementById("payment_encrypted").value;
-            var token = document.getElementById("token").value;
-            // alert(_token);
-            if(!amount) {
-                amount = null;
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            console.log("trx_id before payment:", window.trx_id);
+
+            if (!window.trx_id) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: "Transaction ID is missing!",
+                    icon: 'warning'
+                });
+                return;
             }
             axios({
                 method: 'post',
-                url: '/payment/pays/'+encrypt,
-                data: {
-                    _token: token,
-                    amount: amount
+                url: '/payment/pay/' + window.trx_id,
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
                 }
             })
             .then(function (response) {

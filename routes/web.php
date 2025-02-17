@@ -97,7 +97,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/create/{slug}',                [PaymentConstroller::class, 'create'])->name('payment.create');
         Route::post('/update/{slug}',               [PaymentConstroller::class, 'update'])->name('payment.update');
         Route::post('/store/{slug}',                [PaymentConstroller::class, 'store'])->name('payment.store');
-        Route::get('/pay/{slug}',                  [PaymentConstroller::class, 'pay'])->name('payment.pay');
+        Route::post('/pay/{slug}',                  [PaymentConstroller::class, 'pay'])->name('payment.pay');
         Route::get('/reprint/{slug}',               [PaymentConstroller::class, 'reprint'])->name('payment.reprint');
     });
 
