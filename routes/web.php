@@ -98,7 +98,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/update/{slug}',               [PaymentConstroller::class, 'update'])->name('payment.update');
         Route::post('/store/{slug}',                [PaymentConstroller::class, 'store'])->name('payment.store');
         Route::post('/pay/{slug}',                  [PaymentConstroller::class, 'pay'])->name('payment.pay');
-        Route::get('/reprint/{slug}',               [PaymentConstroller::class, 'reprint'])->name('payment.reprint');
+        Route::get('/print/receipt/{slug}',         [PaymentConstroller::class, 'print_receipt'])->name('payment.print_receipt');
     });
 
     Route::prefix('master-bill')->group(function () {

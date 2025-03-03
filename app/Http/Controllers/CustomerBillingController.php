@@ -127,7 +127,7 @@ class CustomerBillingController extends Controller
         }
         return response()->json([
             'status'    => 200,
-            'message'   => 'Fetch data '.$date." success",
+            'message'   => 'Fetch data '.$date.' success',
         ]);
         // dd($date);
     }
@@ -138,7 +138,7 @@ class CustomerBillingController extends Controller
         }])->get();
         return response()->json([
             'status'    => 200,
-            'message'   => 'Fetch data '.$date." success",
+            'message'   => 'Fetch data '.$date.' success',
             'data'      => $data
         ]);
     }

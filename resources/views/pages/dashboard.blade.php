@@ -101,7 +101,7 @@
             <div class="col-lg-12 mb-lg-0 mb-4">
                 <div class="card z-index-2 h-100">
                     <div class="card-header pb-0 pt-3 bg-transparent">
-                        <h6 class="text-capitalize">Sales overview</h6>
+                        <h6 class="text-capitalize">Rekap Penjualan</h6>
                     </div>
                     <div class="card-body p-3">
                         <div class="chart">
@@ -118,40 +118,14 @@
 @push('js')
     <script src="./assets/js/plugins/chartjs.min.js"></script>
     <script>
-        var arr_data = [122,0,125,50, 40, 300, 220, 500, 250, 400, 230, 500];
+        var chartData = @json($chart);
         var ctx1 = document.getElementById("chart-line").getContext("2d");
 
         var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
 
         new Chart(ctx1, {
             type: "bar",
-            // data: {
-            //     labels: ["Jan","Feb","Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            //     datasets: [{
-            //         label: "-",
-            //         borderColor: "#000",
-            //         data: arr_data,
-            //     }],
-            // },
-            data: {
-                labels: ['Oktober 2024','November 2024', 'Desember 2024', 'Januari 2025', 'Februari 2025'],
-                datasets: [
-                    {
-                        label: 'Sudah Bayar',
-                        backgroundColor: "rgba(54, 162, 235, 0.5)",
-                        borderColor: "rgba(54, 162, 235, 1)",
-                        borderWidth: 1,
-                        data: [75, 60, 60, 70, 75]
-                    },
-                    {
-                        label: 'Belum Bayar',
-                        backgroundColor: "rgba(255, 99, 132, 0.5)",
-                        borderColor: "rgba(255, 99, 132, 1)",
-                        borderWidth: 1,
-                        data: [0, 15, 15, 5, 0]
-                    }
-                ]
-            },
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,

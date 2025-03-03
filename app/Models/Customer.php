@@ -12,6 +12,11 @@ class Customer extends Model
         'id',
     ];
 
+    public function group()
+    {
+        return $this->belongsTo(CustomerGroup::class, 'group_id');
+    }
+
     public function package()
     {
         return $this->belongsTo(MasterBilling::class, 'billing_id');

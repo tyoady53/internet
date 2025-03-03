@@ -53,7 +53,7 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
-    public function judges() {
-        return $this->hasMany(JudgesHasUser::class,'judge_id','id');
-    }
+    // public function judges() {
+    //     return $this->hasMany(JudgesHasUser::class,'judge_id','id');
+    // }
 }

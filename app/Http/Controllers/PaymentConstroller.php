@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CustomerBilling;
 use App\Models\CustomerGroup;
+use App\Models\SetupProgram;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -159,14 +160,37 @@ class PaymentConstroller extends Controller
 
     public function pay($request) {
         $transaction = CustomerBilling::where('billing_number',$request)->first();
-        $transaction->update([
+        // dd($transaction);
+        $update = CustomerBilling::where('billing_number',$request)->update([
             'pay_date'  => Carbon::now()
         ]);
 
+        if($update) {
+            return response()->json([
+                'status'    => 200,
+                'message'   => 'Insert Success',
+                'data'      => $transaction->billing_number,
+            ]);
+        }
+
         return response()->json([
-            'status'    => 200,
-            'message'   => 'Insert Success',
+            'status'    => 402,
+            'message'   => 'Transaction Failed',
         ]);
+    }
+
+    public function print_receipt($request) {
+        $transaction = CustomerBilling::where('billing_number',$request)->with('customer.group')->first();
+        if(is_null($transaction->pay_date)) {
+            return redirect('payment/index');
+        }
+
+        // dd($transaction);
+        $setup = SetupProgram::where('id',1)->first();
+        return view('layouts.receipt',[
+            'data' => $transaction,
+            'setup'=> $setup,
+        ])->with('success','created');
     }
 
     public function reprint($request) {

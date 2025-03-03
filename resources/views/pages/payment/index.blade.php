@@ -301,7 +301,11 @@
             })
             .then(function (response) {
                 if(response.data.status == 200){
-                    this.print(encrypt);
+                    window.open('/payment/print/receipt/' + response.data.data, '_blank');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500)
+                    // this.print(encrypt);
                 } else {
                     Swal.fire({
                         title: 'Error!',
