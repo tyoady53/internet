@@ -72,7 +72,7 @@
                 <br>
                 <strong>Area:</strong> {{ $data->customer->group->group_name }}
                 <br>
-                <strong>Tgl Bayar:</strong> {{ \Carbon\Carbon::parse($data->updated_at)->format('d-M-Y') }}
+                <strong>Tgl Bayar:</strong> {{ \Carbon\Carbon::parse($data->pay_date)->format('d-M-Y') }}
             </td>
         </tr>
 

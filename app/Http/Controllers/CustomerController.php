@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Imports\CustomerImport;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
+use App\Models\MasterBilling;
 use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
@@ -19,8 +20,12 @@ class CustomerController extends Controller
     {
         $users = [];
         $users = CustomerGroup::with('customers.package')->orderBy('group_name')->get()->toArray();
+        $groups = CustomerGroup::orderBy('group_name')->get();
+        $billings = MasterBilling::get();
         return view('pages.customers.index',[
-            'cust_groups'      => $users,
+            'cust_groups'   => $users,
+            'groups'        => $groups,
+            'billings'      => $billings,
         ]);
     }
 
@@ -39,46 +44,59 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'          => 'required',
-            'address'       => 'required',
-            'billing'       => 'required',
-            'house_no'      => 'required',
-            'phone'         => 'required',
+            'name'      => 'required',
+            // 'address'   => 'required',
+            'group'     => 'required',
+            'package'   => 'required',
         ]);
 
-        $year_date =Carbon::now()->format('Ym');
-        $last_data = Customer::where('customer_number','LIKE','%'.$year_date.'%')->orderBy('customer_number','DESC')->first();
-        if($last_data){
-            $customer_number = (int)$last_data->customer_number + 1;
+        $group = CustomerGroup::where('id', $request->group)->first();
+
+        if(!$request->address) {
+            $address = $group->group_name;
         } else {
-            $customer_number = $year_date.'001';
-        }
-        $water_meter_no = "";
-        if($request->water_meter_no){
-            $water_meter_no = $request->water_meter_no;
-        }
-        $insert = Customer::create([
-            'name'          => $request->name,
-            'address'       => $request->address,
-            'status'        => '1',
-            'encrypted_id'  => '-',
-            'water_meter_no'=> $water_meter_no,
-            'billing_number'=> $request->billing,
-            'house_no'      => $request->house_no,
-            'phone'         => $request->phone,
-            'customer_number'   => $customer_number,
-        ]);
-
-        // dd('insert->id '.$insert->id,$insert->id.Carbon::now(),'md5 Now'.md5(Carbon::now()),'md5 uniq '.md5($insert->id.Carbon::now()));
-
-        $encrypted_id   = md5($insert->id.Carbon::now());
-
-
-        if($insert){
-            $insert->update(['encrypted_id'  => $encrypted_id]);
+            $address = $request->address;
         }
 
-        return redirect('customer/index')->with('success','created');
+        if(!$request->join_date) {
+            $join_date = Carbon::now()->format('Y-m-d');
+        } else {
+            $join_date = $request->join_date;
+        }
+
+        if(!$request->discount) {
+            $discount = 0;
+        } else {
+            $discount = $request->discount;
+        }
+
+        $last_data = Customer::where('join_date', $join_date)->where('group_id',$request->group)->latest()->first();
+        $last_number = (int) substr($last_data->customer_number,4,4) + 1;
+
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $generated = substr(str_shuffle($characters), 0, 4);
+
+        $customer_number = Carbon::parse($join_date)->format('ym').str_pad($last_number, 4, '0', STR_PAD_LEFT).str_pad($request->group, 4, '0', STR_PAD_LEFT).$generated;
+        $insert = [
+            'name'      => $request->name,
+            'address'   => $address,
+            'join_date' => $join_date,
+            'group_id'  => $request->group,
+            'discount'  => $discount,
+            'billing_id'=> $request->package,
+            'quantity'  => 1,
+            'is_active' => '1',
+            'encrypted_id' => md5(Carbon::now()->format('Y-m-d H:i').$request->group.$request->package),
+            'customer_number' => $customer_number
+        ];
+
+        $save = Customer::create($insert);
+
+        if($save) {
+            return redirect('customer/index')->with('success','created');
+        }else {
+            return redirect('customer/index')->with('success','failed');
+        }
     }
 
     /**
@@ -144,19 +162,14 @@ class CustomerController extends Controller
     }
 
     public function fetch() {
-        // $data = CustomerBilling::where('billing_date', $date)->pluck('customer_id')->toArray();
-        // $cut_date = substr($date,-5);
         $customers = Customer::with('package')->orderBy('join_date')->orderBy('group_id')->get();
-        // dd($customers);
         $last_data = 1;
         $return = ''; $message = '';
-        // $insert = array();
         $join_date = '2024-01-08';
         foreach($customers as $customer) {
             $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             $generated = substr(str_shuffle($characters), 0, 4);
             if(Carbon::parse($customer->join_date)->format('ym') >  Carbon::parse($join_date)->format('ym')) {
-                // dd($join_date,$customer->join_date);
                 $join_date = $customer->join_date;
                 $last_data = 1;
             }
@@ -169,12 +182,8 @@ class CustomerController extends Controller
                 $customer->update($insert);
             }
         }
-        // dd($insert);
+
         return redirect('customer/index')->with('success','updated');
-        // return response()->json([
-        //     'status'    => 200,
-        //     'message'   => 'Fetch data success',
-        // ]);
     }
 
     public function import_excel(Request $request)

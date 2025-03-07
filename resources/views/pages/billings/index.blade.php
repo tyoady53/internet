@@ -21,6 +21,11 @@
                         </div>
                     </div>
                 </form>
+
+                <div id="loading" style="display: none">
+                    <div id="loading-content" class="loading-content"></div>
+
+                </div>
                 <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
@@ -186,6 +191,7 @@
                 // order: [[4, 'asc'],[2, 'asc']]
             });
             $("#fetch").click(function(){
+                $('#loading').show();
                 var periode = document.getElementsByName('periode');
                 axios({
                     method: 'get',
@@ -215,6 +221,8 @@
             });
 
             $("#filter").click(function(){
+                // window.showLoading()
+                $('#loading').show();
                 var periode = document.getElementsByName('periode');
                 get_data(periode[0]?.value);
             });
@@ -227,42 +235,74 @@
                 url: '/billing/get/'+date
                 })
                 .then(function (response) {
+                    // window.hideLoading()
+                    $('#loading').hide();
                     if(response.data.status == 200) {
-                        // inner += '<tr class="form-control" name="token" id="token" value="'+response.data.token_+'" type="hidden" readonly>';
-                            for(var i =0; i < response.data.data.length; i++) {
-                                current_data = response.data.data[i];
+                        var inner = "";
+                        var data = response.data.data; // This is an object, not an array
+
+                        // Loop through group names (keys)
+                        Object.keys(data).forEach((groupName, i) => {
+                            var current_data = data[groupName]; // Array of customers under this group
+                            console.log(data);
+                            console.log(groupName);
+
+                            inner += '<tr>';
+                            inner += '<td colspan="6">';
+                            inner += groupName + ' (' + current_data.length + ')';
+                            inner += '</td>';
+                            inner += '</tr>';
+
+                            // Loop through customers in this group
+                            current_data.forEach((customer, j) => {
                                 inner += '<tr>';
-                                inner += '<td colspan="6">';
-                                inner += current_data.group_name + ' ('+current_data.customers.length+')';
+                                inner += '<td>' + (j + 1) + '</td>';
+                                inner += '<td>' + customer.name + '</td>';
+                                inner += '<td>' + customer.address + '</td>';
+                                inner += '<td>' + customer.paket + '</td>'; // Fixed package name reference
+                                inner += '<td class="text-center">';
+                                inner += customer.tanggal_bayar !== '-'
+                                    ? `<span class="badge bg-success shadow border-0 ms-2 mb-2">Sudah Dibayar</span>`
+                                    : `<span class="badge bg-danger shadow border-0 ms-2 mb-2">Belum Dibayar</span>`;
                                 inner += '</td>';
+                                inner += '<td>' + (customer.tanggal_bayar !== '-' ? customer.tanggal_bayar : "") + '</td>';
                                 inner += '</tr>';
-                                for(var j = 0; j< current_data.customers.length; j ++){
-                                    current_ = current_data.customers[j];
-                                    inner += '<tr>';
-                                    inner += '<td>';
-                                    inner += parseInt(j) + 1;
-                                    inner += '</td>';
-                                    inner += '<td>';
-                                    inner += current_.name;
-                                    inner += '</td>';
-                                    inner += '<td>';
-                                    inner += current_.address;
-                                    inner += '</td>';
-                                    inner += '<td>';
-                                    inner += current_.package.billing_name;
-                                    inner += '</td>';
-                                    inner += '<td>';
-                                    inner += current_.billing[0].pay_date ? "Sudah Dibayar" : "Belum Dibayar";
-                                    inner += '</td>';
-                                    inner += '<td>';
-                                    inner += current_.billing[0].pay_date ? current_.billing[0].pay_date : "";
-                                    inner += '</td>';
-                                    // inner += '<td>';
-                                    // inner += "Tombol Bayar";
-                                    // inner += '</td>';
-                                    inner += '</tr>';
-                                }
-                            }
+                            });
+                        });
+                            // for(var i =0; i < response.data.data.length; i++) {
+                            //     current_data = response.data.data[i];
+                            //     inner += '<tr>';
+                            //     inner += '<td colspan="6">';
+                            //     inner += current_data.group_name + ' ('+current_data.customers.length+')';
+                            //     inner += '</td>';
+                            //     inner += '</tr>';
+                            //     for(var j = 0; j< current_data.customers.length; j ++){
+                            //         current_ = current_data.customers[j];
+                            //         console.log(current_.billing.length)
+                            //         if(current_.billing.length > 0) {
+                            //             inner += '<tr>';
+                            //             inner += '<td>';
+                            //             inner += parseInt(j) + 1;
+                            //             inner += '</td>';
+                            //             inner += '<td>';
+                            //             inner += current_.name;
+                            //             inner += '</td>';
+                            //             inner += '<td>';
+                            //             inner += current_.address;
+                            //             inner += '</td>';
+                            //             inner += '<td>';
+                            //             inner += current_.package.billing_name;
+                            //             inner += '</td>';
+                            //             inner += '<td class="text-center">';
+                            //             inner += current_.billing[0].pay_date ? `<span class="badge bg-success shadow border-0 ms-2 mb-2">Sudah Dibayar</span>` : `<span class="badge bg-danger shadow border-0 ms-2 mb-2">Belum Dibayar</span>`;
+                            //             inner += '</td>';
+                            //             inner += '<td>';
+                            //             inner += current_.billing[0].pay_date ? current_.billing[0].pay_date : "";
+                            //             inner += '</td>';
+                            //             inner += '</tr>';
+                            //         }
+                            //     }
+                            // }
                         document.getElementById("table_content").innerHTML = inner;
                     } else {
                         Swal.fire({

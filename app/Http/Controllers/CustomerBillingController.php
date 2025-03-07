@@ -107,35 +107,67 @@ class CustomerBillingController extends Controller
     public function fetch($date) {
         $data = CustomerBilling::where('billing_date', $date)->pluck('customer_id')->toArray();
         $cut_date = substr($date,-5);
+        $billing_ = Carbon::parse($date.'-20');
+        // dd($billing_);
         $customers = Customer::with('package')->whereNotIn('id',$data)->get();
         foreach($customers as $customer) {
-            $price = $customer->package->price;
-            $discount = (int)$customer->discount/100 * (int)$customer->package->price;
-            $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            $billing_number = $cut_date.'-'.str_pad($customer->id, 4, '0', STR_PAD_LEFT).'-'.substr(str_shuffle($characters), 0, 4);
-            $insert = [
-                'customer_id'   => $customer->id,
-                'billing_date'  => $date,
-                'package_name'  => $customer->package->billing_name,
-                'price'         => $price,
-                'quantity'      => 1,
-                'discount'      => $discount,
-                'total'         => $price - $discount,
-                'billing_number'=> $billing_number
-            ];
-            CustomerBilling::create($insert);
+            $join_date = Carbon::parse($customer->join_date);
+            // dd($join_date,$billing_);
+            if($billing_ > $join_date) {
+                $price = $customer->package->price;
+                $discount = (int)$customer->discount/100 * (int)$customer->package->price;
+                $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                $billing_number = $cut_date.'-'.str_pad($customer->id, 4, '0', STR_PAD_LEFT).'-'.substr(str_shuffle($characters), 0, 4);
+                $insert = [
+                    'customer_id'   => $customer->id,
+                    'billing_date'  => $date,
+                    'package_name'  => $customer->package->billing_name,
+                    'price'         => $price,
+                    'quantity'      => 1,
+                    'discount'      => $discount,
+                    'total'         => $price - $discount,
+                    'billing_number'=> $billing_number
+                ];
+                CustomerBilling::create($insert);
+            }
         }
+
         return response()->json([
             'status'    => 200,
             'message'   => 'Fetch data '.$date.' success',
         ]);
-        // dd($date);
     }
 
     public function get($date) {
-        $data = CustomerGroup::with(['customers.package','customers.billing' => function ($query) use ($date) {
+        $get = CustomerGroup::with(['customers.package','customers.billing' => function ($query) use ($date) {
             $query->where('billing_date', $date);
         }])->get();
+
+        $data = [];
+
+        foreach($get as $d) {
+            $filteredCustomers = $d['customers']->map(function ($customer) {
+                if(count($customer['billing']) > 0) {
+                    return [
+                        'name' => $customer->name,
+                        'address' => $customer->address,
+                        'paket' => $customer['package']['billing_name'],
+                        'billing_number' => $customer['billing'][0]['billing_number'],
+                        'tanggal_billing' => $customer['billing'][0]['billing_date'],
+                        'tanggal_bayar' => $customer['billing'][0]['pay_date'] ? $customer['billing'][0]['pay_date'] : '-',
+                        'jumlah' => $customer['billing'][0]['price'],
+                        'diskon' => $customer['billing'][0]['discount'],
+                        'total' => $customer['billing'][0]['total'],
+                    ];
+                }
+                return null;
+            })
+            ->filter()->values(); // Reset array keys
+
+            if ($filteredCustomers->isNotEmpty()) {
+                $data[$d->group_name] = $filteredCustomers->toArray();
+            }
+        }
         return response()->json([
             'status'    => 200,
             'message'   => 'Fetch data '.$date.' success',

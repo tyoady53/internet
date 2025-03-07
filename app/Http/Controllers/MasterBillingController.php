@@ -12,7 +12,7 @@ class MasterBillingController extends Controller
      */
     public function index()
     {
-        $billing = MasterBilling::get();
+        $billing = MasterBilling::orderByRaw('CAST(package AS UNSIGNED)')->get();
 
         return view('pages.master.billing',[
             'data'      => $billing,
@@ -32,7 +32,25 @@ class MasterBillingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request);
+        $random = md5($request->package.$request->_token);
+        $price = str_replace(".","",$request->price);
+
+        $insert = MasterBilling::create([
+            'billing_name'  => $request->package.' MBPS',
+            'package'       => $request->package,
+            'unit'          => 'mbps',
+            'price'         => $price,
+            'is_active'     => 1,
+            'encrypted_id'  => $random
+        ]);
+
+        if($insert) {
+            return redirect('master-bill/index')->with('success','created');
+        }
+
+        return redirect('master-bill/index')->with('success','failed');
+        // dd($request,$request->_token,$random,$price);
     }
 
     /**

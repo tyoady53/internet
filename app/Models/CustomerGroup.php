@@ -14,6 +14,6 @@ class CustomerGroup extends Model
 
     public function customers()
     {
-        return $this->hasMany(Customer::class, 'group_id');
+        return $this->hasMany(Customer::class, 'group_id')->orderBy('join_date','DESC');
     }
 }

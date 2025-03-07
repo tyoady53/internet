@@ -76,18 +76,28 @@
     var message = '';
     document.addEventListener('DOMContentLoaded', function() {
         var message = '';
+        var icon = '';
 
         @if(session('success') == 'updated')
             message = 'Data Updated';
+            icon = 'success';
+            title = 'Success';
         @elseif (session('success') == 'created')
+            title = 'Success';
             message = 'Data Created Successfully';
+            icon = 'success';
+        @elseif (session('success') == 'failed')
+            title = 'Failed';
+            message = 'Create/Update data failed';
+            icon = 'error';
         @endif
 
-        if (message !== '') {
+
+        if (message != '') {
             Swal.fire({
-                title: 'Success!',
+                title: title,
                 text: message,
-                icon: 'success'
+                icon: icon
             });
 
             // Clear the 'success' session variable

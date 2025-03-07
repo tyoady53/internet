@@ -64,44 +64,32 @@ class PaymentConstroller extends Controller
             // dd($data);
 
             foreach($data as $d) {
-                // $billingData = $d['customers']->map(function ($customer) {
-                //     return ['name' => $customer->name,'paket'=>$customer['package']['billing_name'], 'tanggal_billing'=>$customer['billing'][0]['billing_date'] ,'tanngal_bayar' => ($customer['billing'][0]['pay_date'] ? $customer['billing'][0]['pay_date'] : '-')];  // Get the billing data for each customer $customer['billing'][0]
-                // });
                 $billingData = $d['customers']->map(function ($customer) {
-                    return [
-                        'name' => $customer->name,
-                        'paket' => $customer['package']['billing_name'],
-                        'billing_number' => $customer['billing'][0]['billing_number'],
-                        'tanggal_billing' => $customer['billing'][0]['billing_date'],
-                        'tanggal_bayar' => $customer['billing'][0]['pay_date'] ? $customer['billing'][0]['pay_date'] : '-',
-                        'jumlah' => $customer['billing'][0]['price'],
-                        'diskon' => $customer['billing'][0]['discount'],
-                        'total' => $customer['billing'][0]['total'],
-                    ];
-                });
-
-                // Only add to array if there's billing data for the group
-                // if ($billingData->isNotEmpty()) {
-                //     $return_array = [
-                //         'Sudah Bayar' => [], // Initialize "Sudah Bayar" group
-                //         'Belum Bayar' => []  // Initialize "Belum Bayar" group
-                //     ];
-                // }
+                    if(count($customer['billing']) > 0) {
+                        return [
+                            'name' => $customer->name,
+                            'paket' => $customer['package']['billing_name'],
+                            'billing_number' => $customer['billing'][0]['billing_number'],
+                            'tanggal_billing' => $customer['billing'][0]['billing_date'],
+                            'tanggal_bayar' => $customer['billing'][0]['pay_date'] ? $customer['billing'][0]['pay_date'] : '-',
+                            'jumlah' => $customer['billing'][0]['price'],
+                            'diskon' => $customer['billing'][0]['discount'],
+                            'total' => $customer['billing'][0]['total'],
+                        ];
+                    }
+                    return null;
+                })
+                ->filter();
 
                 foreach ($billingData as $billing) {
                     $paymentDate = $billing['tanggal_bayar'];
-
-                    // Initialize the array for each payment date if not set
                     if ($paymentDate == '-') {
                         $return_array['Belum Bayar'][] = $billing;
                     } else {
                         $return_array['Sudah Bayar'][] = $billing;
                     }
-                    // Add the customer data to the correct payment date
-
                 }
             }
-            // dd($return_array);
         }
         return view('pages.payment.index',[
             'groups'    => $groups,

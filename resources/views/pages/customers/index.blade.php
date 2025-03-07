@@ -1,7 +1,7 @@
 @extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-    @include('layouts.navbars.auth.topnav', ['title' => 'Customers'])
+    @include('layouts.navbars.auth.topnav', ['title' => 'Pelanggan'])
     <div class="card shadow-lg mx-4 mt-8" id="user_info">
         <div class="card-body p-3">
             <div class="row gx-4">
@@ -10,7 +10,8 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <div class="input-group mb-3">
-                                <a href="/customer/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a>
+                                {{-- <a href="/customer/create" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a> --}}
+                                <a href="" data-bs-toggle="modal" data-bs-target="#modal_add" class="btn btn-primary input-group-text"> <i class="fa fa-plus-circle me-2"></i> NEW</a>
                             </div>
                         </div>
                         <div>
@@ -103,6 +104,77 @@
             </form>
         </div>
     </div>
+
+    <div class="modal fade" id="modal_add" tabindex="-1" aria-labelledby="UserDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="UserDetailsModalLabel">Tambah Pelanggan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="form_content">
+                    <div class="modal-body">
+                        <form  method="post" action="{{ route('customer.store') }}">
+                            @csrf
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Name</label>
+                                        <input class="form-control" value="{{ old('name') }}" name="name" type="text" placeholder="Nama" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Alamat</label>
+                                        <input class="form-control" value="{{ old('address') }}" name="address" type="text" placeholder="Alamat">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="fw-bold">Area</label>
+                                <select class="form-control" name="group" required>
+                                    <option value="">Pilih</option>
+                                    @foreach ($groups as $group)
+                                    <option value="{{ $group->id }}">{{ $group->group_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="fw-bold">Paket</label>
+                                <select class="form-control" name="package" required>
+                                    <option value="">Pilih</option>
+                                    @foreach ($billings as $billing)
+                                    <option value="{{ $billing->id }}">{{ $billing->billing_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Tanggal Pasang</label>
+                                        <input class="form-control" value="{{ old('join_date') }}" name="join_date" type="date" placeholder="Tanggal Pasang" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Diskon (%)</label>
+                                        <input class="form-control" value="{{ old('dicount') }}" name="dicount" type="number" max="100" placeholder="Diskon">
+                                    </div>
+                                </div>
+                            </div>
+                            * Kosongkan Discount jika tidak ada, dan Tanggal Pasang jika di input di hari yang sama dengan tanggal pasang
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-save me-1"></i> Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="alert">
         @include('components.alert')
     </div>

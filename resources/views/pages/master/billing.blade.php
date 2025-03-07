@@ -38,19 +38,24 @@
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="modal_add" tabindex="-1" aria-labelledby="UserDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="UserDetailsModalLabel">Tambah Permission</h5>
+                    <h5 class="modal-title" id="UserDetailsModalLabel">Tambah Paket</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="p-2">
-                    <form role="form" method="post" action="{{ route('permission.store') }}">
+                    <form role="form" method="post" action="{{ route('master-bill.store') }}">
                         @csrf
                         <div>
-                            <label class="fw-bold">Permission Name</label>
-                            <input class="form-control" value="" name="permission_name" type="text" placeholder="Permission Name">
+                            <label class="fw-bold">Besaran Paket (Mbps)</label>
+                            <input class="form-control" value="" name="package" type="text" placeholder="Besaran Paket" onkeydown="return numbersonly(this, event);" required>
+                        </div>
+                        <div>
+                            <label class="fw-bold">Harga Paket</label>
+                            <input class="form-control" value="" name="price" type="text" placeholder="Harga" onkeydown="return numbersonly(this, event);" onkeyup="javascript:tandaPemisahTitik(this);" required>
                         </div>
                         <hr>
                         <div class="row mt-3">
@@ -64,6 +69,7 @@
             </div>
         </div>
     </div>
+
     <div id="alert">
         @include('components.alert')
     </div>

@@ -24,9 +24,11 @@
                         </div>
                     </div>
                 </form>
+                <section id="loading" style="display: none;">
+                    <div id="loading-content"></div>
+                </section>
                 <div class="accordion" id="accordionExample">
                     @foreach ($datas as $idx=>$data)
-                    {{-- {{ dd($idx) }} --}}
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="heading{{ str_replace(' ', '', $idx)  }}">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ str_replace(' ', '', $idx) }}" aria-expanded="false" aria-controls="collapse{{ str_replace(' ', '', $idx)  }}">
@@ -68,7 +70,8 @@
                                                     data-bs-target="#modal_bayar" class="btn btn-success btn-sm me-2">
                                                     <i class="fa fa-money me-1"></i> Bayar</a>
                                                     @else
-                                                    Print Ulang
+                                                    <a href="/payment/print/receipt/{{ $customer['billing_number'] }}" target="_blank" class="btn btn-primary"> <i class="fa fa-print" aria-hidden="true"></i> Print </a>
+                                                    {{-- Print Ulang --}}
                                                     @endif
                                                 </td>
                                             </tr>
