@@ -2,14 +2,13 @@
 
 @section('content')
     @include('layouts.navbars.auth.topnav', ['title' => 'Billing'])
-    <div class="card shadow-lg mx-4 mt-8" id="user_info">
+    <div class="card shadow-lg mx-4 mt-8" id="billing">
         <div class="card-body p-3">
             <div class="row gx-4">
                 <form>
                     <div class="input-group mb-3">
                         <div class="input-group mb-3">
                             <form role="form" method="get" action="{{ route('report.index') }}">
-                                {{-- <button class="btn btn-primary input-group-text" type="button" id="fetch" onclick="fetch()"> Fetch <i class="fa fa-recycle ms-2"></i></button> --}}
                                 <button class="btn btn-primary input-group-text" type="button" id="fetch"> Fetch <i class="fa fa-recycle ms-2"></i></button>
                                 <select class="form-control input-group-text mb-3" name="periode">
                                 @foreach ($filters as $filter)

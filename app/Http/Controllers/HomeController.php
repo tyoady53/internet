@@ -6,6 +6,7 @@ use App\Models\BenchMarkGroup;
 use App\Models\BenchMarkQuestion;
 use App\Models\Customer;
 use App\Models\CustomerBilling;
+use App\Models\CustomerGroup;
 use App\Models\Payment;
 use App\Models\QuickResponseQuestion;
 use App\Models\RolePlayGroup;
@@ -37,6 +38,13 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $os_name = php_uname('s');
+        if($os_name == 'Linux') {
+            $serial = shell_exec("sudo dmidecode -s baseboard-serial-number 2>/dev/null");
+        } else {
+            $serial = shell_exec("wmic baseboard get serialnumber");
+        }
+        dd(trim(str_replace('SerialNumber', '', $serial)));
         // Dashboard
         $rolename = '';
         $user_id = auth()->user()->id;
@@ -90,7 +98,6 @@ class HomeController extends Controller
 
     public function report(Request $request)
     {
-        $paid_bill = array(); $unpaid_bill = array();
         $dates = CustomerBilling::select('billing_date')->distinct()->get();
         $now = Carbon::now();
         $from_mo = Carbon::parse($dates[0]->billing_date);
@@ -126,25 +133,63 @@ class HomeController extends Controller
             $month_arr->push((object)['key' => $year_current.'-'.$month_current, 'value' => $year_current.'-'.$months[$month_current-1]]);
         }
 
-        if($request->periode){
-            $paid_bill  = CustomerBilling::with('customer')->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->where('billing_date',$request->periode)->whereNotNull('pay_date')->get();
-
-            // $unpaid_bill  = Customer::whereHas('billings', function ($query) {
-            //     $query->whereNull('pay_date');
-            // })
-            // ->with(['billings'=> function ($query) use ($now,$request) {
-            //     $query->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->where('billing_date',$request->periode);
-            // }])
-            // ->get();
-            $unpaid_bill    = CustomerBilling::with('customer')->selectRaw("*, TIMESTAMPDIFF(MONTH, CONCAT(billing_date, '-20'), '$now') AS late")->where('billing_date',$request->periode)->whereNull('pay_date')->get();
-        }
-
-        // dd($request,$paid_bill,$unpaid_bill);
-
         return view('pages.report.index',[
             'filters'   => $month_arr,
-            'paid'      => $paid_bill,
-            'unpaid'    => $unpaid_bill,
+        ]);
+    }
+
+    public function get_report($date) {
+        $get = CustomerGroup::with(['customers.package', 'customers.billing' => function ($query) use ($date) {
+            $query->where('billing_date', $date);
+        }])->get();
+
+        $data = [];
+
+        foreach ($get as $d) {
+            $filteredCustomers = $d['customers']->map(function ($customer) {
+                if (count($customer['billing']) > 0) {
+                    $customerData = [
+                        'name' => $customer->name,
+                        'address' => $customer->address,
+                        'paket' => $customer['package']['billing_name'],
+                        'billing_number' => $customer['billing'][0]['billing_number'],
+                        'tanggal_billing' => $customer['billing'][0]['billing_date'],
+                        'tanggal_bayar' => $customer['billing'][0]['pay_date'] ? $customer['billing'][0]['pay_date'] : '-',
+                        'jumlah' => $customer['billing'][0]['price'],
+                        'diskon' => $customer['billing'][0]['discount'],
+                        'total' => $customer['billing'][0]['total'],
+                    ];
+
+                    return [
+                        'customer' => $customerData,
+                        'status' => $customer['billing'][0]['pay_date'] ? 'sudah_bayar' : 'belum_bayar',
+                    ];
+                }
+                return null;
+            })->filter()->values(); // Reset array keys
+
+            if ($filteredCustomers->isNotEmpty()) {
+                $sudahBayar = $filteredCustomers->where('status', 'sudah_bayar')->pluck('customer')->toArray();
+                $belumBayar = $filteredCustomers->where('status', 'belum_bayar')->pluck('customer')->toArray();
+
+                $totalPaid = collect($sudahBayar)->sum('total');
+                $totalNotPaid = collect($belumBayar)->sum('total');
+                $totalAmount = collect($sudahBayar)->sum('total') + collect($belumBayar)->sum('total');
+
+                $data[$d->group_name] = [
+                    'sudah_bayar' => $sudahBayar,
+                    'belum_bayar' => $belumBayar,
+                    'total_dibayar'=> $totalPaid,
+                    'total_belum_bayar'=> $totalNotPaid,
+                    'total_group' => $totalAmount, // Sum of all `total` values in the group
+                ];
+            }
+        }
+
+        return response()->json([
+            'status'    => 200,
+            'message'   => 'Fetch data '.$date.' success',
+            'data'      => $data
         ]);
     }
 

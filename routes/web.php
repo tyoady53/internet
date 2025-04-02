@@ -68,6 +68,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/index',        [HomeController::class, 'report'])->name('report.index');
         Route::get('/{param}/show', [HomeController::class, 'show'])->name('report.show');
         Route::get('/print',        [HomeController::class, 'report_print'])->name('report.print');
+        Route::get('/get/{periode}',[HomeController::class, 'get_report'])->name('get_report');
     });
 
     Route::prefix('customer')->group(function () {
@@ -125,24 +126,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/store',           [UserController::class, 'store'])->name('user.store');
         Route::post('/change_password', [UserController::class, 'change_password'])->name('user.change_password');
         Route::get('/reset_pass/{id}',  [UserController::class, 'reset_password'])->name('user.reset_password');
-    });
-
-    Route::prefix('role')->group(function () {
-        Route::get('/index',            [RoleController::class, 'index'])->name('role.index');
-        Route::get('/create',           [RoleController::class, 'create'])->name('role.create');
-        Route::get('/edit/{slug}',      [RoleController::class, 'edit'])->name('role.edit');
-        Route::post('/store',           [RoleController::class, 'store'])->name('role.store');
-        Route::post('/update/{slug}',   [RoleController::class, 'update'])->name('role.update');
-        Route::get('/show',             [RoleController::class, 'show'])->name('role.show');
-    });
-
-    Route::prefix('permissions')->group(function () {
-        Route::get('/index',            [PermissionController::class, 'index'])->name('permission.index');
-        Route::get('/create',           [PermissionController::class, 'create'])->name('permission.create');
-        Route::get('/edit/{slug}',      [PermissionController::class, 'edit'])->name('permission.edit');
-        Route::post('/store',           [PermissionController::class, 'store'])->name('permission.store');
-        Route::post('/update/{slug}',   [PermissionController::class, 'update'])->name('permission.update');
-        Route::get('/show',             [PermissionController::class, 'show'])->name('permission.show');
     });
 
     Route::prefix('chart')->group(function () {

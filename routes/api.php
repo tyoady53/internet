@@ -20,4 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/get_data_omzet/{date}',  [PaymentController::class, 'get_data_omzet'])->name('api.get_data_omzet');
+// Route::get('/get_data_omzet/{date}',  [PaymentController::class, 'get_data_omzet'])->name('api.get_data_omzet');
