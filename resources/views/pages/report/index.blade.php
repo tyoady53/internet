@@ -222,7 +222,6 @@
             $('#loading').hide(); // Hide loading indicator
             var inner = '';
 
-
             // Loop through each group (e.g., "Pesona Anggrek")
             Object.keys(data).forEach((groupName) => {
                 var current_group = data[groupName]; // Group data for this groupName
@@ -255,7 +254,53 @@
 
             // Update the table content
             document.getElementById("table_content").innerHTML = inner;
-            document.getElementById("table_title").innerHTML = '<div><h4>'+message+'</h4></div>';
+            document.getElementById("table_title").innerHTML = `<div class="row"><div class="col-8"><h4>${message}</h4></div><div class="col-4 text-end"><button id="exportBtn" class="btn btn-primary">Export</button></div></div>`;
+
+            document.getElementById("exportBtn").addEventListener("click", function() {
+                exportData();
+            });
+        }
+
+        function exportData() {
+            var periode = document.getElementsByName('periode');
+                // console.log(periode[0]?.value)
+            var month = periode[0]?.value;
+            // Display a loading message or indication
+            // alert('Exporting data for month: ' + month);
+            Swal.fire({
+                title: "Info!",
+                text: 'Exporting data for month: ' + month,
+                icon: "info",
+                timer: 2000, // Dismiss after 2 seconds
+                showConfirmButton: false, // Hide the confirm button
+                showConfirmButton: false, // Hide the confirm button
+                timerProgressBar: true, // Show the progress bar
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                }
+            });
+
+            // Perform the export operation (you can use AJAX or navigate directly)
+            $.ajax({
+                url: '/report/export/' + month,
+                method: 'GET',
+                success: function(response) {
+                    // Handle success response (for example, notify the user)
+                    Swal.fire({
+                        title: "Success!",
+                        text: response.message,
+                        icon: "success",
+                    });
+                    // console.log(response)
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response
+                    alert('Error exporting data: ' + error);
+                }
+            });
         }
 
         // Helper function to format customer row

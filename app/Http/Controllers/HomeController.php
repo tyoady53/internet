@@ -272,7 +272,7 @@ class HomeController extends Controller
 
         return response()->json([
             'status' => 200,
-            'message' => 'Laporan berhasil dibuat',
+            'message' => "Laporan {$formattedDate} berhasil dibuat",
             // 'laporan_area' => asset('storage/reports/' . $fileName),
             // 'laporan_rekap' => asset('storage/reports/' . $rekapFileName)
         ]);
