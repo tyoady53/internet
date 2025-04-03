@@ -69,6 +69,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{param}/show', [HomeController::class, 'show'])->name('report.show');
         Route::get('/print',        [HomeController::class, 'report_print'])->name('report.print');
         Route::get('/get/{periode}',[HomeController::class, 'get_report'])->name('get_report');
+        Route::get('/export/{prm}', [HomeController::class, 'export_report'])->name('export_report');
+        Route::get('/lists',        [HomeController::class, 'lists'])->name('lists');
     });
 
     Route::prefix('customer')->group(function () {

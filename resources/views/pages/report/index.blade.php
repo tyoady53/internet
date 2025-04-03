@@ -15,7 +15,8 @@
                                     <option value="{{ $filter->key }}" {{ request('periode') == $filter->key ? 'selected' : '' }}>{{ $filter->value }}</option>
                                 @endforeach
                                 </select>
-                                <button class="btn btn-primary input-group-text" type="button" id="filter"> <i class="fa fa-search me-2"></i> Filter</button>
+                                <button class="btn btn-primary input-group-text me-1" type="button" id="filter"> <i class="fa fa-search me-2"></i> Filter</button>
+                                <button class="btn btn-primary input-group-text" type="button" id="daftar"> <i class="fa fa-list me-2"></i> Daftar Laporan</button>
                             </form>
                         </div>
                     </div>
@@ -26,6 +27,7 @@
 
                 </div>
                 <div class="table-responsive">
+                <div id="table_title"></div>
                 <table class="table table-striped table-bordered table-hover" id="example">
                     <thead>
                         <tr>
@@ -163,6 +165,10 @@
                 get_data(periode[0]?.value);
             });
 
+            $("#daftar").click(function(){
+                location.href = '/report/lists';
+            });
+
             var month = new Date();
             var formattedMonth = month.getFullYear() + '-' + ("0" + (month.getMonth() + 1)).slice(-2);
             // console.log("Current Month (Y-m):", formattedMonth);
@@ -187,10 +193,9 @@
                         title: "Success!",
                         text: response.data.message,
                         icon: "success",
-                        confirmButtonText: "OK"
                     }).then(() => {
                         console.log(response.data)
-                        load_data(response.data.data); // Pass the data to load_data
+                        load_data(response.data.data,response.data.message); // Pass the data to load_data
                     });
                 } else {
                     // Handle failure
@@ -198,7 +203,6 @@
                         title: "Error!",
                         text: "Fetch data gagal",
                         icon: "error",
-                        confirmButtonText: "OK"
                     });
                 }
             })
@@ -213,10 +217,11 @@
             });
         }
 
-        function load_data(data) {
+        function load_data(data,message) {
             console.log(data);
             $('#loading').hide(); // Hide loading indicator
             var inner = '';
+
 
             // Loop through each group (e.g., "Pesona Anggrek")
             Object.keys(data).forEach((groupName) => {
@@ -250,6 +255,7 @@
 
             // Update the table content
             document.getElementById("table_content").innerHTML = inner;
+            document.getElementById("table_title").innerHTML = '<div><h4>'+message+'</h4></div>';
         }
 
         // Helper function to format customer row

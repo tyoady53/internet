@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Benchmark;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -40,11 +42,11 @@ class HomeController extends Controller
     {
         $os_name = php_uname('s');
         if($os_name == 'Linux') {
-            $serial = shell_exec("sudo dmidecode -s baseboard-serial-number 2>/dev/null");
+            $serial = shell_exec("lsblk -d -o SERIAL | sed -n '2p'");
         } else {
-            $serial = shell_exec("wmic baseboard get serialnumber");
+            $serial = trim(shell_exec("wmic diskdrive get SerialNumber | findstr /V SerialNumber"));
         }
-        dd(trim(str_replace('SerialNumber', '', $serial)));
+
         // Dashboard
         $rolename = '';
         $user_id = auth()->user()->id;
@@ -85,10 +87,6 @@ class HomeController extends Controller
             ]
         ];
 
-        // $rolenames = $user->getRoleNames();
-        // if(count($rolenames)){
-        //     $rolename = $rolenames[0];
-        // }
         return view('pages.dashboard',[
             'role'      => $rolename,
             'filters'   => $filter,
@@ -188,8 +186,140 @@ class HomeController extends Controller
 
         return response()->json([
             'status'    => 200,
-            'message'   => 'Fetch data '.$date.' success',
+            'message'   => 'Laporan pembayaran '.$date,
             'data'      => $data
+        ]);
+    }
+
+    public function export_report($date) {
+        // Format the $date to 'M Y' format, like 'Jan 2025'
+        $formattedDate = Carbon::parse($date)->format('M Y');
+
+        $get = CustomerGroup::with(['customers.package', 'customers.billing' => function ($query) use ($date) {
+            $query->where('billing_date', $date);
+        }])->get();
+
+        $areaData = [];
+        $rekapData = [];
+
+        foreach ($get as $d) {
+
+            // Filter customer berdasarkan status pembayaran
+            $filteredCustomers = $d['customers']->map(function ($customer) {
+                if (count($customer['billing']) > 0) {
+                    return [
+                        'name' => $customer->name,
+                        'address' => $customer->address,
+                        'paket' => $customer['package']['billing_name'],
+                        'billing_number' => $customer['billing'][0]['billing_number'],
+                        'tanggal_billing' => $customer['billing'][0]['billing_date'],
+                        'tanggal_bayar' => $customer['billing'][0]['pay_date'] ?? '-',
+                        'total' => $customer['billing'][0]['total'],
+                    ];
+                }
+                return null;
+            })->filter()->values();
+
+            // Jika ada data customer
+            if ($filteredCustomers->isNotEmpty()) {
+                $sudahBayar = $filteredCustomers->where('tanggal_bayar', '!=', '-')->pluck('total')->sum();
+                $belumBayar = $filteredCustomers->where('tanggal_bayar', '-')->pluck('total')->sum();
+                $totalAmount = $sudahBayar + $belumBayar;
+
+                // Menambahkan data untuk laporan per area
+                $areaData[$d->group_name] = [
+                    'sudah_bayar' => $filteredCustomers->where('tanggal_bayar', '!=', '-')->toArray(),
+                    'belum_bayar' => $filteredCustomers->where('tanggal_bayar', '-')->toArray(),
+                ];
+
+                // Menambahkan data untuk rekap
+                $rekapData[] = [
+                    'group_name' => $d->group_name,
+                    'sudah_bayar' => $sudahBayar,
+                    'belum_bayar' => $belumBayar,
+                    'jumlah' => $totalAmount,
+                ];
+            }
+        }
+
+        // Buat PDF per area dan simpan sebagai file terpisah
+        foreach ($areaData as $area => $data) {
+            // Add $formattedDate in the file name for each area
+            $fileName = strtoupper($area) . " ({$formattedDate}).pdf";
+
+            // Generate PDF untuk setiap area, pass $formattedDate to the view for title
+            $pdfArea = FacadePdf::loadView('Export.PDF.areaReport', [
+                'areaData' => [$area => $data],
+                'date' => $formattedDate, // Pass the formatted $date to the view
+            ])->setPaper('a4');
+
+            // Simpan ke storage
+            Storage::put("public/reports/{$date}/" . $fileName, $pdfArea->output());
+        }
+
+        // Buat PDF untuk laporan rekap keseluruhan
+        $rekapFileName = "_Rekap ({$formattedDate}).pdf";
+
+        // Generate PDF untuk rekap keseluruhan, pass $formattedDate to the view for title
+        $pdfRekap = FacadePdf::loadView('Export.PDF.rekapReport', [
+            'rekapData' => $rekapData,
+            'date' => $formattedDate, // Pass the formatted $date to the view
+        ])->setPaper('a4');
+
+        // Simpan ke storage
+        Storage::put("public/reports/{$date}/" . $rekapFileName, $pdfRekap->output());
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Laporan berhasil dibuat',
+            // 'laporan_area' => asset('storage/reports/' . $fileName),
+            // 'laporan_rekap' => asset('storage/reports/' . $rekapFileName)
+        ]);
+    }
+
+    public function lists() {
+        // Define the base directory
+        $dir = storage_path('app/public/reports');
+
+        // Get all subdirectories
+        $directories = glob($dir . '/*', GLOB_ONLYDIR);
+
+        usort($directories, function ($a, $b) {
+            return strcmp(basename($b), basename($a)); // Compare directory names in descending order
+        });
+
+        $data = [];
+
+        // Loop through each directory and get files inside
+        foreach ($directories as $directory) {
+            $directoryName = basename($directory);  // Get the directory name
+
+            // Get all files inside the directory
+            $files = glob($directory . '/*'); // You can modify this pattern to match specific file types
+
+            // Prepare an array to hold file details for the current directory
+            $fileDetails = [];
+
+            // Loop through files and gather details
+            foreach ($files as $filePath) {
+                $file_name = basename($filePath);
+                $fileDetails[] = [
+                    'file_name'   => $file_name,
+                    'file_size'   => filesize($filePath),
+                    'file_created' => date("Y-m-d H:i:s", filectime($filePath)),
+                ];
+            }
+
+            // If there are files in the directory, add them to the data array
+            if (count($fileDetails) > 0) {
+                $data[$directoryName] = $fileDetails;
+            }
+        }
+
+        // return response()->json($data);
+        // Return the data in a structured format (you can also return as JSON if needed)
+        return view('pages.report.show',[
+            'datas'   => $data,
         ]);
     }
 
