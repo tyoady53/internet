@@ -191,6 +191,7 @@ class HomeController extends Controller
         ]);
     }
 
+    // composer require barryvdh/laravel-dompdf
     public function export_report($date) {
         // Format the $date to 'M Y' format, like 'Jan 2025'
         $formattedDate = Carbon::parse($date)->format('M Y');
