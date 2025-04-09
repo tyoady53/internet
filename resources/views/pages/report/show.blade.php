@@ -31,8 +31,8 @@
                                                     <td class="text-center">{{ number_format($file['file_size'] / 1024, 2) }} KB</td>
                                                     <td class="text-center">{{ $file['file_created'] }}</td>
                                                     <td class="text-center">
-                                                        <a href="{{ asset("storage/reports/{$month}/" . $file['file_name']) }}" class="btn btn-primary btn-sm" download>
-                                                            <i class="fa fa-download me-1"></i> Download
+                                                        <a href="{{ asset("storage/reports/{$month}/" . $file['file_name']) }}" target="_blank" class="btn btn-primary btn-sm">
+                                                            <i class="fa fa-eye me-1"></i> View
                                                         </a>
                                                     </td>
                                                 </tr>
