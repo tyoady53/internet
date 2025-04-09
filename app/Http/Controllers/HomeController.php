@@ -194,7 +194,7 @@ class HomeController extends Controller
     // composer require barryvdh/laravel-dompdf
     public function export_report($date) {
         // Format the $date to 'M Y' format, like 'Jan 2025'
-        $formattedDate = Carbon::parse($date)->format('M-Y');
+        $formattedDate = Carbon::parse($date)->format('M Y');
 
         $get = CustomerGroup::with(['customers.package', 'customers.billing' => function ($query) use ($date) {
             $query->where('billing_date', $date);
@@ -246,7 +246,7 @@ class HomeController extends Controller
         // Buat PDF per area dan simpan sebagai file terpisah
         foreach ($areaData as $area => $data) {
             // Add $formattedDate in the file name for each area
-            $fileName = strtoupper(str_replace('_',' ',$area)) . "_({$formattedDate}).pdf";
+            $fileName = strtoupper($area) . " ({$formattedDate}).pdf";
 
             // Generate PDF untuk setiap area, pass $formattedDate to the view for title
             $pdfArea = FacadePdf::loadView('Export.PDF.areaReport', [
@@ -259,7 +259,7 @@ class HomeController extends Controller
         }
 
         // Buat PDF untuk laporan rekap keseluruhan
-        $rekapFileName = "_Rekap_({$formattedDate}).pdf";
+        $rekapFileName = "_Rekap ({$formattedDate}).pdf";
 
         // Generate PDF untuk rekap keseluruhan, pass $formattedDate to the view for title
         $pdfRekap = FacadePdf::loadView('Export.PDF.rekapReport', [
