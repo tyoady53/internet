@@ -64,7 +64,21 @@
                                                     @endif
                                                 </td>
                                                 <td class="text-center">
-                                                    <a href="{{ './edit/'.$customer['encrypted_id'] }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> EDIT</a>
+                                                    <a href=""
+                                                        data-customer_id="{{ $customer['encrypted_id'] }}"
+                                                        data-customer_name="{{ $customer['name'] }}"
+                                                        data-customer_address="{{ $customer['address'] }}"
+                                                        data-customer_area="{{ $customer['group_id'] }}"
+                                                        data-customer_paket="{{ $customer['billing_id'] }}"
+                                                        data-customer_pasang="{{ $customer['join_date'] }}"
+                                                        data-customer_diskon="{{ $customer['discount'] }}"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modal_edit"
+                                                        class="btn btn-success btn-sm me-2">
+                                                        <i class="fa fa-pencil me-1"></i>
+                                                        EDIT
+                                                    </a>
+                                                    {{-- <a href="{{ './edit/'.$customer['encrypted_id'] }}" class="btn btn-success btn-sm me-2"><i class="fa fa-pencil-alt me-1"></i> EDIT</a> --}}
                                                 </td>
                                             </tr>
                                             @endforeach
@@ -166,6 +180,80 @@
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-success">
                                     <i class="fa fa-save me-1"></i> Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_edit" tabindex="-1" aria-labelledby="UserDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="UserDetailsModalLabel">Tambah Pelanggan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="form_content">
+                    <div class="modal-body">
+                        <form method="post">
+                            @csrf
+                            {{-- @method('PUT') --}}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Name</label>
+                                        <input class="form-control" name="edit_name" type="text" placeholder="Nama" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Alamat</label>
+                                        <input class="form-control" name="edit_address" type="text" placeholder="Alamat">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="fw-bold">Area</label>
+                                <select class="form-control" name="edit_group" required>
+                                    <option value="">Pilih</option>
+                                    @foreach ($groups as $group)
+                                    <option value="{{ $group->id }}">{{ $group->group_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="fw-bold">Paket</label>
+                                <select class="form-control" name="edit_package" required>
+                                    <option value="">Pilih</option>
+                                    @foreach ($billings as $billing)
+                                    <option value="{{ $billing->id }}">{{ $billing->billing_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Tanggal Pasang</label>
+                                        <input class="form-control" name="edit_join_date" type="date" placeholder="Tanggal Pasang" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Diskon (%)</label>
+                                        <input class="form-control" name="edit_dicount" type="number" max="100" placeholder="Diskon">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-save me-1"></i> Update
                                 </button>
                             </div>
                         </form>
@@ -285,6 +373,29 @@
             });
             // new DataTable('#example');
         })
+
+        $("#modal_edit").on("show.bs.modal", function (e) {
+            var button = $(e.relatedTarget);
+            var customerName = button.data('customer_name');
+            var customerAddress = button.data('customer_address');
+            var customerArea = button.data('customer_area');
+            var customerPaket = button.data('customer_paket');
+            var customerPasang = button.data('customer_pasang');
+            var customerDiskon = button.data('customer_diskon');
+            var customerId = button.data('customer_id');
+
+            // Now set values in the form fields inside the modal
+            $(this).find('input[name="edit_name"]').val(customerName);
+            $(this).find('input[name="edit_address"]').val(customerAddress);
+            $(this).find('select[name="edit_group"]').val(customerArea);
+            $(this).find('select[name="edit_package"]').val(customerPaket);
+            $(this).find('input[name="edit_join_date"]').val(customerPasang);
+            $(this).find('input[name="edit_dicount"]').val(customerDiskon);
+
+            var formAction = `/customer/update/${customerId}`;
+
+            $(this).find('form').attr('action', formAction);
+        });
     </script>
 
 @endsection

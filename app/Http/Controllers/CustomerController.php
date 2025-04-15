@@ -123,31 +123,27 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $slug)
     {
-        $array_update = [];
         $user   = Customer::where('encrypted_id',$slug)->first();
-        if($request->status){
-            $array_update['status'] = 1;
-            $status = 1;
-        } else {
-            $array_update['status'] = 0;
-            $status = 0;
+        $array_update = [];
+        if($request->edit_name){
+            $array_update['name'] = $request->edit_name;
         }
-        if($request->name){
-            $array_update['name'] = $request->name;
+        if($request->edit_address){
+            $array_update['address'] = $request->edit_address;
         }
-        if($request->address){
-            $array_update['address'] = $request->address;
+        if($request->edit_join_date){
+            $array_update['join_date'] = $request->edit_join_date;
         }
-        if($request->house_no){
-            $array_update['house_no'] = $request->house_no;
+        if($request->edit_group){
+            $array_update['group_id'] = $request->edit_group;
         }
-        if($request->billing_number){
-            $array_update['billing_number'] = $request->billing_number;
+        if($request->edit_package){
+            $array_update['billing_id'] = $request->edit_package;
         }
-        if($request->phone){
-            $array_update['phone'] = $request->phone;
+        if($request->edit_dicount){
+            $array_update['discount'] = $request->edit_dicount;
         }
-        // dd($array_update);
+        // dd($array_update, $request);
         $update = $user->update($array_update);
 
         return redirect('customer/index')->with('success','updated');
