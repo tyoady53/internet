@@ -186,7 +186,7 @@ class HomeController extends Controller
 
         return response()->json([
             'status'    => 200,
-            'message'   => 'Laporan pembayaran '.$date,
+            'message'   => 'Laporan Bulan '.date_format(date_create($date), "M-Y"),
             'data'      => $data
         ]);
     }

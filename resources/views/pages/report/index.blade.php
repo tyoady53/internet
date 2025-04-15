@@ -191,7 +191,7 @@
                 if (response.data.status == 200) {
                     Swal.fire({
                         title: "Success!",
-                        text: response.data.message,
+                        text: "Berhasil Memuat "+response.data.message,
                         icon: "success",
                     }).then(() => {
                         console.log(response.data)

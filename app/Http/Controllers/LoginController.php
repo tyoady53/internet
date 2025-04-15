@@ -23,29 +23,40 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // $credentials = $request->validate([
+        //     'email' => ['required'],
+        //     'password' => ['required'],
+        // ]);
+
+        // $user = User::where('email',$request->email)->first();
+        // if($user && $user->active == '1'){
+        //     if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        //         $request->session()->regenerate();
+
+        //         return redirect()->intended('dashboard');
+        //     } else {
+        //         return redirect('login')->with('login','false');
+        //     }
+        // } else {
+        //     return redirect('login')->with('login','not_found');
+        // }
         $credentials = $request->validate([
-            'email' => ['required'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        $user = User::where('email',$request->email)->first();
-        if($user->active == '1'){
-            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-                // dd('attempt');
-                $request->session()->regenerate();
-
-                return redirect()->intended('dashboard');
-            } else {
-                return back()->withErrors([
-                    'email' => 'The provided credentials do not match our records.',
-                ]);
-            }
-        } else {
-            return back()->withErrors([
-                'email' => 'User Not Found.',
-            ]);
+        // Attempt login with active account only
+        if (Auth::attempt([
+            'email' => $credentials['email'],
+            'password' => $credentials['password'],
+            'active' => 1
+        ])) {
+            $request->session()->regenerate();
+            return redirect()->intended('dashboard');
         }
 
+        // Login failed
+        return redirect()->route('login')->with('login', 'invalid');
     }
 
     public function logout(Request $request)
